@@ -9,7 +9,7 @@ html {
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #f47a20;
 }
 
 html {
@@ -19,4 +19,57 @@ html {
 
 body {
   margin-bottom: 60px;
+}
+/* Color de marca Palermo's Tattoo */
+:root {
+    --bs-primary: #f47a20;
+    --bs-primary-rgb: 244, 122, 32;
+    --bs-link-color: #b85000;
+    --bs-link-color-rgb: 184, 80, 0;
+    --bs-link-hover-color: #8f3e00;
+    --bs-link-hover-color-rgb: 143, 62, 0;
+}
+
+/* Barra superior y pie */
+.navbar-brand,
+.navbar .nav-link:hover {
+    color: #f47a20 !important;
+}
+
+footer.footer {
+    border-top: 2px solid #f47a20 !important;
+}
+
+/* Botones principales y de detalle */
+.btn-primary,
+.btn-info {
+    --bs-btn-color: #111;
+    --bs-btn-bg: #f47a20;
+    --bs-btn-border-color: #f47a20;
+    --bs-btn-hover-color: #111;
+    --bs-btn-hover-bg: #d96512;
+    --bs-btn-hover-border-color: #d96512;
+    --bs-btn-active-color: #111;
+    --bs-btn-active-bg: #c85a0e;
+    --bs-btn-active-border-color: #c85a0e;
+    --bs-btn-focus-shadow-rgb: 244, 122, 32;
+}
+
+/* Opcion seleccionada del menu desplegable */
+.dropdown-menu {
+    --bs-dropdown-link-active-bg: #f47a20;
+    --bs-dropdown-link-active-color: #111;
+}
+
+/* Encabezado de tabla del mantenimiento de productos */
+.table-primary {
+    --bs-table-bg: #2b2b2b;
+    --bs-table-color: #fff;
+    --bs-table-border-color: #444;
+}
+/* Paginador */
+.pagination {
+    --bs-pagination-active-bg: #f47a20;
+    --bs-pagination-active-border-color: #f47a20;
+    --bs-pagination-active-color: #111;
 }
