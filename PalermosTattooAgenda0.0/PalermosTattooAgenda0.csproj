@@ -9,18 +9,26 @@
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="16.2.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.0">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="9.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageReference Include="Serilog" Version="4.4.0" />
     <PackageReference Include="Serilog.AspNetCore" Version="10.0.0" />
+    <PackageReference Include="X.PagedList" Version="10.6.0" />
+    <PackageReference Include="X.PagedList.Mvc.Core" Version="10.6.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\PalermoAgenda.Aplication\PalermoAgenda.Aplication.csproj" />
+    <ProjectReference Include="..\PalermoAgenda.Aplication\PalermoAgenda.Application.csproj" />
     <ProjectReference Include="..\PalermoAgenda.Infraestructure\PalermoAgenda.Infraestructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Logs\" />
+    <Folder Include="wwwroot\Images\" />
   </ItemGroup>
 
 </Project>

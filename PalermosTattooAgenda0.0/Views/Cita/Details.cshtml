@@ -1,0 +1,87 @@
+﻿@model PalermoAgenda.Application.DTOs.CitaDTO
+
+@{
+    ViewBag.Title = "Detalle de la Reserva";
+}
+
+<h1>Detalle de la reserva</h1>
+<div>
+    <hr />
+    <dl class="row">
+        
+        <dt>@Html.DisplayNameFor(model => model.FechaCreacion)</dt>
+        
+        <dd>
+            @Model.FechaCreacion.ToString("dd-MM-yyyy HH:mm")
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Fecha)
+        </dt>
+
+        <dd>
+            @Model.Fecha.ToString("dd-MM-yyyy")
+        </dd>
+
+        <dt>
+             Horario
+        </dt>
+
+        <dd>
+            @Model.HoraInicio.ToString("HH:mm") - @Model.HoraFin.ToString("HH:mm")
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.IdArtistaNavigation)
+        </dt>
+        <dd>
+            @Model.IdArtistaNavigation.Nombre
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.IdServicioNavigation)
+        </dt>
+        <dd>
+            @Model.IdServicioNavigation.Nombre
+        </dd>
+
+   
+         <dt>
+             @Html.DisplayNameFor(model => model.ZonaCuerpo)
+         </dt>
+         <dd>
+             @Model.ZonaCuerpo
+         </dd>
+
+         <dt>
+             @Html.DisplayNameFor(model => model.TieneAlergias)
+         </dt>
+         <dd>
+             @(Model.TieneAlergias ? "Sí" : "No")
+             @if (Model.TieneAlergias)
+                {
+                 <span>- @Model.DetalleAlergias</span>
+                 }
+         </dd>
+
+         <dt>
+             @Html.DisplayNameFor(model => model.ReferenciaDiseno)
+         </dt>
+         <dd>
+             @Model.ReferenciaDiseno
+         </dd>
+
+         <dt>
+             @Html.DisplayNameFor(model => model.IdEstadoCitaNavigation)
+         </dt>
+         <dd>
+             <span class="badge" style="background-color:@Model.IdEstadoCitaNavigation.Color">
+             @Model.IdEstadoCitaNavigation.Nombre
+             </span>
+         </dd>
+     </dl>
+</div>
+<p>
+    @Html.ActionLink("Regresar al listado", "Index")
+</p>
+

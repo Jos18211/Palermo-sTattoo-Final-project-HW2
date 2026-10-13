@@ -1,0 +1,105 @@
+﻿@model PalermoAgenda.Application.DTOs.FacturaDTO
+
+@{
+    ViewBag.Title = "Detalle Factura";
+}
+
+<div>
+    <h4>@Html.DisplayNameFor(model => model.IdFactura)  @Html.DisplayFor(model => model.IdFactura)</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.FechaFactura)
+        </dt>
+
+        <dd>
+            @Model.FechaFactura.ToString("dd-MM-yyyy")
+        </dd>
+
+        <dt>
+    @Html.DisplayNameFor(model => model.IdClienteNavigation)
+</dt>
+<dd>
+    @Model.IdClienteNavigation.Nombre <br />
+    @Model.IdClienteNavigation.Identificacion
+</dd>
+
+<dt>
+    @Html.DisplayNameFor(model => model.IdArtistaNavigation)
+</dt>
+<dd>
+    @Model.IdArtistaNavigation.Nombre <br />
+    @Model.IdArtistaNavigation.Telefono <br />
+    @Model.IdArtistaNavigation.Direccion <br />
+    @Model.IdArtistaNavigation.Email
+</dd>
+
+    </dl>
+    <hr />
+    <h4>Detalle Factura</h4>
+    <table class="table table-hover">
+        <tr>
+            <th>
+                Producto / Servicio
+            </th>
+            <th>
+                Cantidad
+            </th>
+            <th>
+                Precio
+            </th>
+            <th>
+                Subtotal
+            </th>
+        </tr>
+
+        @foreach (var item in Model.FacturaDetalle)
+        {
+            <tr>
+                <td>
+                    @(item.IdProductoNavigation?.Nombre ?? item.IdServicioNavigation?.Nombre)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Cantidad)
+                </td>
+                <td>
+                    &cent;@Html.DisplayFor(modelItem => item.PrecioUnitario)
+                </td>
+                <td>
+                    &cent;@Html.DisplayFor(modelItem => item.Subtotal)
+                </td>
+            </tr>
+        }
+        <tr>
+            <th colspan="3">
+                <span class="float-end"> @Html.DisplayNameFor(model => model.Subtotal)</span>
+
+            </th>
+            <th>
+                &cent; @Html.DisplayFor(model => model.Subtotal)
+            </th>
+        </tr>
+        <tr>
+            <th colspan="3">
+                <span class="float-end"> IVA @Model.PorcentajeImpuesto.ToString("0.##")%</span>
+
+            </th>
+            <th>
+                &cent; @Html.DisplayFor(model => model.MontoImpuesto)
+            </th>
+        </tr>
+
+        <tr>
+            <th colspan="3">
+                <span class="float-end"> @Html.DisplayNameFor(model => model.Total)</span>
+
+            </th>
+            <th>
+                &cent; @Html.DisplayFor(model => model.Total)
+            </th>
+        </tr>
+    </table>
+</div>
+<p>
+    @Html.ActionLink("Regresar al listado", "Index")
+</p>

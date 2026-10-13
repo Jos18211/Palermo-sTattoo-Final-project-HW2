@@ -1,6 +1,7 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using PalermosTattooAgenda0.Web.Models;
+using System.Diagnostics;
 
 namespace PalermosTattooAgenda0.Web.Controllers
 {
@@ -27,6 +28,15 @@ namespace PalermosTattooAgenda0.Web.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        [HttpGet]
+        public IActionResult ErrorHandler(string messagesJson)
+        {
+            var errorMessages = JsonConvert.
+                DeserializeObject<ErrorMiddlewareViewModel>(messagesJson);
+            ViewBag.ErrorMessages = errorMessages;
+            return View("ErrorHandler");
         }
     }
 }

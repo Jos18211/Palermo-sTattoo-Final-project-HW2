@@ -1,0 +1,45 @@
+﻿@model IEnumerable<PalermoAgenda.Application.DTOs.CitaDTO>
+
+@{
+    ViewData["Title"] = "Reservas";
+}
+
+<h1>Reservas</h1>
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.Fecha)</th>
+            <th>@Html.DisplayNameFor(model => model.HoraInicio)</th>
+            <th>@Html.DisplayNameFor(model => model.IdServicioNavigation)</th>
+            <th>@Html.DisplayNameFor(model => model.IdEstadoCitaNavigation)</th>
+            <th></th>
+
+           
+            
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                
+                <td>@item.Fecha.ToString("dd-MM-yyyy")</td>
+                <td>@item.HoraInicio.ToString("HH:mm")</td>
+                <td>@item.IdServicioNavigation.Nombre</td>
+                <td>
+                    <span class="badge" style="background-color:@item.IdEstadoCitaNavigation.Color">
+                        @item.IdEstadoCitaNavigation.Nombre
+                    </span>
+                </td>
+
+                <td>
+                    <a asp-action="Details"
+                       asp-route-id="@item.IdCita"
+                       class="btn btn-info">Detalle</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

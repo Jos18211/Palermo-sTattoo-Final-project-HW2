@@ -1,0 +1,41 @@
+﻿@model IEnumerable<PalermoAgenda.Application.DTOs.ArtistaDTO>
+
+<h1>@ViewBag.Titulo</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<div class="row">
+    <a class="btn btn-success" asp-controller="Artista" asp-action="Enviar">Enviar</a>
+</div>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.IdArtista)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Nombre)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IdArtista)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Nombre)
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { id = item.IdArtista }) |
+                    @Html.ActionLink("Details", "Details", new { id = item.IdArtista }) |
+                    @Html.ActionLink("Delete", "Delete", new { id = item.IdArtista })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
