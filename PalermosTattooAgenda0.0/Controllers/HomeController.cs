@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using PalermosTattooAgenda0.Web.Models;
 using System.Diagnostics;
+using PalermoAgenda.Application.Services.Interfaces;
 
 namespace PalermosTattooAgenda0.Web.Controllers
 {
@@ -9,15 +10,24 @@ namespace PalermosTattooAgenda0.Web.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly IWebHostEnvironment _env;
+        private readonly IServiceArtista _serviceArtista;
 
-        public HomeController(ILogger<HomeController> logger, IWebHostEnvironment env)
+        public HomeController(ILogger<HomeController> logger, IWebHostEnvironment env
+                              , IServiceArtista serviceArtista)
         {
             _logger = logger;
             _env = env;
+           
+            _serviceArtista = serviceArtista;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
+           
+            ViewBag.Artistas =
+                await _serviceArtista.ListAsync();
+            ViewBag.Trabajos = ListarImagenes("trabajos")
+                .Take(4).ToList();
             return View();
         }
 

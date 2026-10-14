@@ -1,5 +1,11 @@
-﻿@{
+﻿@using PalermoAgenda.Application.DTOs
+@{
     ViewData["Title"] = "Inicio";
+    
+    var artistas = ViewBag.Artistas
+       as IEnumerable<ArtistaDTO> ?? new List<ArtistaDTO>();
+    var trabajos = ViewBag.Trabajos
+    as List<string> ?? new List<string>();
 }
 
 <div id="exampleCarrusel" class="carousel slide" style="padding-top:1em">
@@ -40,6 +46,86 @@
         <span class="visually-hidden">Next</span>
     </button>
 </div>
+
+<section class="seccion-inicio">
+  <h2 class="titulo-seccion">Nuestros artistas</h2>
+  <div class="row row-cols-2 row-cols-md-4 g-4
+              text-center">
+    @foreach (var a in artistas.Where(x => x.Estado))
+    {
+      var foto = Url.Content(
+        "~/images/artistas/" + a.Imagen);
+      <div class="col">
+        <img class="foto-artista mb-3" src="@foto"
+             alt="@a.Nombre"
+             onerror="this.src='/images/profile.png'" />
+        <h5>@a.Nombre</h5>
+        <p class="small text-muted">@a.Descripcion</p>
+      </div>
+    }
+  </div>
+</section>
+
+    <section class="seccion-inicio">
+        <h2 class="titulo-seccion">Trabajos recientes</h2>
+        <div class="row row-cols-2 row-cols-md-4 g-3">
+            @foreach (var nombre in trabajos)
+            {
+                var ruta = Url.Content(
+                "~/images/Galeria/Trabajos/" + nombre);
+                <div class="col">
+                    <img class="img-fluid rounded w-100
+                            tarjeta-hover img-reciente"
+                         src="@ruta" alt="Trabajo realizado"
+                         loading="lazy" />
+                </div>
+            }
+        </div>
+        <div class="text-center mt-4">
+            <a class="btn btn-primary btn-lg"
+               asp-action="Galeria">
+                <i class="bi bi-images"></i> Ver galería completa
+            </a>
+        </div>
+    </section>
+
+    <section class="seccion-inicio">
+        <div class="row g-4">
+            <div class="col-md-6">
+                <h2 class="titulo-seccion">Horario</h2>
+                <table class="table">
+                    <tr>
+                        <td>Lunes a viernes</td>
+                        <td class="text-end">9:00 - 19:00</td>
+                    </tr>
+                    <tr>
+                        <td>Sábado</td>
+                        <td class="text-end">10:00 - 19:00</td>
+                    </tr>
+                    <tr>
+                        <td>Domingo</td>
+                        <td class="text-end">11:00 - 19:00</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="col-md-6">
+                <h2 class="titulo-seccion">Visítanos</h2>
+                <p>
+                    <i class="bi bi-geo-alt text-primary"></i>
+                    Alajuela, Costa Rica
+                </p>
+                <p>
+                    <i class="bi bi-whatsapp text-primary"></i>
+                    6127-8904
+                </p>
+                <p>
+                    <i class="bi bi-instagram text-primary"></i>
+                    palermott
+                </p>
+            </div>
+        </div>
+    </section>
+
 @section Scripts {
     <script type="text/javascript">
         const myCarouselElement = document.getElementById('exampleCarrusel')

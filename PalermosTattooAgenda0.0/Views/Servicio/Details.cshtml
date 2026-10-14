@@ -1,0 +1,56 @@
+﻿@model PalermoAgenda.Application.DTOs.ServicioDTO
+@{
+    ViewData["Title"] = "Detalle del servicio";
+}
+
+<div class="row g-4 mt-2">
+    <div class="col-md-5">
+        @if (Model.Imagen != null
+                && Model.Imagen.Length > 0)
+        {
+            var b64 = Convert
+            .ToBase64String(Model.Imagen);
+            <img class="img-fluid rounded w-100"
+                 src="data:image/jpeg;base64,@b64"
+                 alt="@Model.Nombre" />
+        }
+        else
+        {
+            <div class="sin-imagen rounded"
+                 style="height:320px">
+                <i class="bi bi-brush"></i>
+            </div>
+        }
+    </div>
+    <div class="col-md-7">
+        <h1>@Model.Nombre</h1>
+        <span class="badge bg-secondary mb-3">
+            @Model.Estilo
+        </span>
+        <p>@Model.Descripcion</p>
+        <dl class="row">
+            <dt class="col-sm-4">Precio</dt>
+            <dd class="col-sm-8 fw-bold text-primary">
+                &#8353;@Model.Precio.ToString("N0")
+            </dd>
+            <dt class="col-sm-4">Duración</dt>
+            <dd class="col-sm-8">
+                @Model.DuracionMinutos minutos
+            </dd>
+            <dt class="col-sm-4">Complejidad</dt>
+            <dd class="col-sm-8">@Model.Complejidad</dd>
+            <dt class="col-sm-4">Artistas</dt>
+            <dd class="col-sm-8">
+                @foreach (var a in Model.IdArtista)
+                {
+                    <span class="badge bg-primary me-1">
+                        @a.Nombre
+                    </span>
+                }
+            </dd>
+        </dl>
+        <a class="btn btn-secondary" asp-action="Index">
+            <i class="bi bi-arrow-left"></i> Regresar
+        </a>
+    </div>
+</div>

@@ -21,11 +21,13 @@ builder.Services.AddTransient<IRepositoryArtista, RepositoryArtista>();
 builder.Services.AddTransient<IRepositoryProducto, RepositoryProducto>();
 builder.Services.AddTransient<IRepositoryFactura, RepositoryFactura>();
 builder.Services.AddTransient<IRepositoryCita, RepositoryCita>();
+builder.Services.AddTransient<IRepositoryServicio, RepositoryServicio>();
 //Services
 builder.Services.AddTransient<IServiceArtista, ServiceArtista>();
 builder.Services.AddTransient<IServiceProducto, ServiceProducto>();
 builder.Services.AddTransient<IServiceCita, ServiceCita>();
 builder.Services.AddTransient<IServiceFactura, ServiceFactura>();
+builder.Services.AddTransient<IServiceServicio, ServiceServicio>();
 //Configurar Automapper
 builder.Services.AddAutoMapper(config =>
 {

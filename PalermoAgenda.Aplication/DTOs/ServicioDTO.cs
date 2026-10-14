@@ -34,6 +34,10 @@ namespace PalermoAgenda.Application.DTOs
 
         public byte[]? Imagen { get; set; }
 
-      
+        [Display(Name = "Artistas")]
+        public ICollection<ArtistaDTO> IdArtista { get; set; }
+    = new List<ArtistaDTO>();
+
+
     }
 }

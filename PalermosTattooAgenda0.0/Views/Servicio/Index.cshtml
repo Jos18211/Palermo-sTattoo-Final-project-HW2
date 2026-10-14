@@ -1,0 +1,63 @@
+﻿@using PalermoAgenda.Application.DTOs
+@model IEnumerable<ServicioDTO>
+@{
+    ViewData["Title"] = "Servicios";
+}
+
+<section >
+    <h1>Nuestros servicios</h1>
+    <div class="row row-cols-1 row-cols-md-2
+              row-cols-lg-4 g-4">
+        @foreach (var s in Model)
+        {
+            <div class="col">
+                <div class="card h-100 tarjeta-hover">
+                    @if (s.Imagen != null && s.Imagen.Length > 0)
+                    {
+                        var b64 = Convert
+                        .ToBase64String(s.Imagen);
+                        <img class="card-img-top img-servicio"
+                             src="data:image/jpeg;base64,@b64"
+                             alt="@s.Nombre" />
+                    }
+                    else
+                    {
+                        <div class="sin-imagen">
+                            <i class="bi bi-brush"></i>
+                        </div>
+                    }
+
+                    <div class="card-body">
+                        <span class="badge bg-secondary mb-2">
+                            @s.Estilo
+                        </span>
+                        <h5 class="card-title">@s.Nombre</h5>
+                        <p class="small text-muted">
+                            @s.Descripcion
+                        </p>
+                    </div>
+                    <div class="card-footer d-flex
+                          justify-content-between">
+                        <span class="fw-bold text-primary">
+                            &#8353;@s.Precio.ToString("N0")
+                        </span>
+                        <span class="small text-muted">
+                            <i class="bi bi-clock"></i>
+                            @s.DuracionMinutos min
+                        </span>
+                    </div>
+                    <div class="card-footer bg-transparent border-0">
+                        <a class="btn btn-primary w-100"
+                           asp-action="Details"
+                           asp-route-id="@s.IdServicio">
+                            <i class="bi bi-zoom-in"></i> Detalle
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    
+
+</section>
