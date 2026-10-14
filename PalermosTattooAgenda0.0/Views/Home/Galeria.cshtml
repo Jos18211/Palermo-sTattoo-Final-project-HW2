@@ -22,7 +22,7 @@
     {
         var ruta = Url.Content("~/images/Galeria/Disenos/" + nombre);
         <div class="col">
-            <a href="@ruta" target="_blank">
+                <a href="@ruta" class="d-block rounded tarjeta-hover" data-bs-toggle="modal" data-bs-target="#modalGaleria">
                 <img class="img-fluid rounded shadow-sm w-100"
                      style="height:320px; object-fit:cover;"
                      src="@ruta"
@@ -40,7 +40,7 @@
     {
         var ruta = Url.Content("~/images/Galeria/Trabajos/" + nombre);
         <div class="col">
-            <a href="@ruta" target="_blank">
+            <a href="@ruta" class="d-block rounded tarjeta-hover" data-bs-toggle="modal" data-bs-target="#modalGaleria">
                 <img class="img-fluid rounded shadow-sm w-100"
                      style="height:320px; object-fit:cover;"
                      src="@ruta"
@@ -51,6 +51,22 @@
     }
 </div>
 </section>
+
+<div class="modal fade" id="modalGaleria"
+     tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered
+                modal-lg">
+        <div class="modal-content bg-dark border-0 p-3">
+            <button type="button"
+                    class="btn-close btn-close-white
+                   position-absolute top-0 end-0 m-3"
+                    data-bs-dismiss="modal"
+                    aria-label="Cerrar"></button>
+            <img id="imgModal" class="img-fluid"
+                 src="" alt="Imagen ampliada" />
+        </div>
+    </div>
+</div>
 
 @section Scripts {
     <script>
@@ -92,5 +108,13 @@
         });
 
         actualizarGaleria();
+        //Mostrar en la ventana la imagen seleccionada
+        const modal =
+            document.getElementById('modalGaleria');
+        modal.addEventListener('show.bs.modal', (e) => {
+            const enlace = e.relatedTarget;
+            document.getElementById('imgModal').src =
+                enlace.getAttribute('href');
+        });
     </script>
 }
