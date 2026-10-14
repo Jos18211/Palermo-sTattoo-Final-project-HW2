@@ -24,10 +24,10 @@ body {
 :root {
     --bs-primary: #f47a20;
     --bs-primary-rgb: 244, 122, 32;
-    --bs-link-color: #b85000;
-    --bs-link-color-rgb: 184, 80, 0;
-    --bs-link-hover-color: #8f3e00;
-    --bs-link-hover-color-rgb: 143, 62, 0;
+    --bs-link-color: #f47a20;
+    --bs-link-color-rgb: 244, 122, 32;
+    --bs-link-hover-color: #ff9d4f;
+    --bs-link-hover-color-rgb: 255, 157, 79;
 }
 
 /* Barra superior y pie */
@@ -69,7 +69,29 @@ footer.footer {
 }
 /* Paginador */
 .pagination {
+    --bs-pagination-color: #fff;
+    --bs-pagination-bg: #303030;
+    --bs-pagination-border-color: #444;
+    --bs-pagination-hover-color: #111;
+    --bs-pagination-hover-bg: #d96512;
+    --bs-pagination-hover-border-color: #d96512;
     --bs-pagination-active-bg: #f47a20;
     --bs-pagination-active-border-color: #f47a20;
     --bs-pagination-active-color: #111;
+}
+
+/* Interruptor de la galeria */
+#switchGaleria {
+    width: 3em;
+    height: 1.5em;
+    cursor: pointer;
+    background-color: #f47a20;
+    border-color: #f47a20;
+    background-size: 1.5em 1.5em;
+    background-image: radial-gradient( circle, #fff 40%, transparent 45%);
+}
+h1, h2, h3, .navbar-brand {
+    font-family: 'Oswald', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }

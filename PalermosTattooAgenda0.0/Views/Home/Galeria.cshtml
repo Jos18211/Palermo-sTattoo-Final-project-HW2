@@ -1,0 +1,96 @@
+﻿
+@{
+    ViewData["Title"] = "Galería";
+    var disenos = ViewBag.Disenos as List<string> ?? new List<string>();
+    var trabajos = ViewBag.Trabajos as List<string> ?? new List<string>();
+}
+
+<h1>Galería</h1>
+
+<div class="d-flex align-items-center gap-3 my-3">
+    <span id="etiquetaDisenos" class="fw-bold" role="button">Diseños disponibles</span>
+    <div class="form-check form-switch m-0">
+        <input class="form-check-input" type="checkbox" role="switch"
+               id="switchGaleria" aria-label="Cambiar entre diseños y trabajos">
+    </div>
+    <span id="etiquetaTrabajos" class="text-muted" role="button">Trabajos realizados</span>
+</div>
+
+<section id="seccionDisenos">
+<div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3">
+    @foreach (var nombre in disenos)
+    {
+        var ruta = Url.Content("~/images/Galeria/Disenos/" + nombre);
+        <div class="col">
+            <a href="@ruta" target="_blank">
+                <img class="img-fluid rounded shadow-sm w-100"
+                     style="height:320px; object-fit:cover;"
+                     src="@ruta"
+                     alt="Diseño propio"
+                     loading="lazy" />
+            </a>
+        </div>
+    }
+</div>
+</section>
+
+<section id="seccionTrabajos" class="d-none">
+<div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3">
+    @foreach (var nombre in trabajos)
+    {
+        var ruta = Url.Content("~/images/Galeria/Trabajos/" + nombre);
+        <div class="col">
+            <a href="@ruta" target="_blank">
+                <img class="img-fluid rounded shadow-sm w-100"
+                     style="height:320px; object-fit:cover;"
+                     src="@ruta"
+                     alt="Trabajo realizado"
+                     loading="lazy" />
+            </a>
+        </div>
+    }
+</div>
+</section>
+
+@section Scripts {
+    <script>
+        const sw =
+            document.getElementById('switchGaleria');
+        const secDis =
+            document.getElementById('seccionDisenos');
+        const secTra =
+            document.getElementById('seccionTrabajos');
+        const etiDis =
+            document.getElementById('etiquetaDisenos');
+        const etiTra =
+            document.getElementById('etiquetaTrabajos');
+
+        function actualizarGaleria() {
+            const t = sw.checked;
+
+            //Mostrar una seccion y ocultar la otra
+            secDis.classList.toggle('d-none', t);
+            secTra.classList.toggle('d-none', !t);
+
+            //Resaltar la etiqueta activa
+            etiDis.classList.toggle('fw-bold', !t);
+            etiDis.classList.toggle('text-muted', t);
+            etiTra.classList.toggle('fw-bold', t);
+            etiTra.classList.toggle('text-muted', !t);
+        }
+
+        sw.addEventListener('change', actualizarGaleria);
+
+        //Las etiquetas tambien cambian el interruptor
+        etiDis.addEventListener('click', () => {
+            sw.checked = false;
+            actualizarGaleria();
+        });
+        etiTra.addEventListener('click', () => {
+            sw.checked = true;
+            actualizarGaleria();
+        });
+
+        actualizarGaleria();
+    </script>
+}
