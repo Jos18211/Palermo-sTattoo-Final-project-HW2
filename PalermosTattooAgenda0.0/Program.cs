@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Serilog.Events;
 using System.Text;
+using PalermosTattooAgenda0.Web.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +24,8 @@ builder.Services.AddTransient<IRepositoryFactura, RepositoryFactura>();
 builder.Services.AddTransient<IRepositoryCita, RepositoryCita>();
 builder.Services.AddTransient<IRepositoryServicio, RepositoryServicio>();
 //Services
+builder.Services.AddMemoryCache();
+builder.Services.AddHttpClient<IServiceInstagram, ServiceInstagram>();
 builder.Services.AddTransient<IServiceArtista, ServiceArtista>();
 builder.Services.AddTransient<IServiceProducto, ServiceProducto>();
 builder.Services.AddTransient<IServiceCita, ServiceCita>();

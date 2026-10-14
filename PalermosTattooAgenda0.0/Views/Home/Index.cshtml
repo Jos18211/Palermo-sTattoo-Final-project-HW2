@@ -1,4 +1,5 @@
 ﻿@using PalermoAgenda.Application.DTOs
+
 @{
     ViewData["Title"] = "Inicio";
     
@@ -6,6 +7,23 @@
        as IEnumerable<ArtistaDTO> ?? new List<ArtistaDTO>();
     var trabajos = ViewBag.Trabajos
     as List<string> ?? new List<string>();
+
+    var instagram = ViewBag.Instagram as List<PublicacionInstagram> ?? new List<PublicacionInstagram>();
+
+    //Ubicacion del estudio (latitud,longitud)
+    var q = "10.018289,-84.178778";
+    string clave = ViewBag.MapsKey ?? "";
+    //Sin clave: mapa basico de Google
+    var urlMapa = "https://maps.google.com/maps?q="
+      + q + "&z=17&output=embed";
+    //Con clave: Maps Embed API
+    if (!string.IsNullOrEmpty(clave))
+    {
+        urlMapa = "https://www.google.com/maps/embed/v1/"
+          + "place?key=" + clave + "&q=" + q
+          + "&zoom=17";
+    }
+    
 }
 
 <div id="exampleCarrusel" class="carousel slide" style="padding-top:1em">
@@ -69,23 +87,61 @@
     <section class="seccion-inicio">
         <h2 class="titulo-seccion">Trabajos recientes</h2>
         <div class="row row-cols-2 row-cols-md-4 g-3">
-            @foreach (var nombre in trabajos)
+        @if (instagram.Any())
+        {
+            //Publicaciones reales de Instagram
+            foreach (var p in instagram)
+            {
+                <div class="col">
+                    <a href="@p.Enlace" target="_blank"
+                       rel="noopener">
+                        @if (p.Video != null)
+                        {
+                            <video class="w-100 rounded tarjeta-hover
+                                          img-reciente"
+                                   src="@p.Video"
+                                   poster="@p.Imagen"
+                                   autoplay muted loop playsinline>
+                            </video>
+                        }
+                        else
+                        {
+                            <img class="img-fluid rounded w-100
+                                        tarjeta-hover img-reciente"
+                                 src="@p.Imagen"
+                                 alt="Publicación de Instagram"
+                                 loading="lazy" />
+                        }
+                    </a>
+                </div>
+            }
+        }
+        else
+        {
+            //Respaldo: fotos fijas de la galeria
+            foreach (var nombre in trabajos)
             {
                 var ruta = Url.Content(
                 "~/images/Galeria/Trabajos/" + nombre);
                 <div class="col">
                     <img class="img-fluid rounded w-100
-                            tarjeta-hover img-reciente"
+                                tarjeta-hover img-reciente"
                          src="@ruta" alt="Trabajo realizado"
                          loading="lazy" />
                 </div>
             }
-        </div>
+        }
+    </div>
         <div class="text-center mt-4">
             <a class="btn btn-primary btn-lg"
                asp-action="Galeria">
                 <i class="bi bi-images"></i> Ver galería completa
             </a>
+        <a class="btn btn-outline-light btn-lg ms-2"
+           href="https://www.instagram.com/palermo.ttt/"
+           target="_blank" rel="noopener">
+            <i class="bi bi-instagram"></i> Síguenos
+        </a>
         </div>
     </section>
 
@@ -125,6 +181,20 @@
             </div>
         </div>
     </section>
+<section class="seccion-inicio">
+    <h2 class="titulo-seccion">Ubícanos</h2>
+    <div class="ratio ratio-21x9 rounded overflow-hidden">
+        <div class="col-lg-8 mx-auto">
+        <iframe class="mapa"
+                src="@urlMapa"
+                loading="lazy"
+                allowfullscreen
+                referrerpolicy="no-referrer-when-downgrade"
+                title="Ubicación de Palermo's Tattoo">
+        </iframe>
+        </div>
+    </div>
+</section>
 
 @section Scripts {
     <script type="text/javascript">

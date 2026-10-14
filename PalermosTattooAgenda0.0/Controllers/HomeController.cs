@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using PalermosTattooAgenda0.Web.Models;
 using System.Diagnostics;
 using PalermoAgenda.Application.Services.Interfaces;
+using PalermosTattooAgenda0.Web.Services;
 
 namespace PalermosTattooAgenda0.Web.Controllers
 {
@@ -11,14 +12,17 @@ namespace PalermosTattooAgenda0.Web.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly IWebHostEnvironment _env;
         private readonly IServiceArtista _serviceArtista;
+        private readonly IConfiguration _configuration;
+        private readonly IServiceInstagram _serviceInstagram;
 
         public HomeController(ILogger<HomeController> logger, IWebHostEnvironment env
-                              , IServiceArtista serviceArtista)
+                              , IServiceArtista serviceArtista, IConfiguration configuration, IServiceInstagram serviceInstagram)
         {
             _logger = logger;
             _env = env;
-           
+            _configuration = configuration;
             _serviceArtista = serviceArtista;
+            _serviceInstagram = serviceInstagram;
         }
 
         public async Task<IActionResult> Index()
@@ -28,6 +32,8 @@ namespace PalermosTattooAgenda0.Web.Controllers
                 await _serviceArtista.ListAsync();
             ViewBag.Trabajos = ListarImagenes("trabajos")
                 .Take(4).ToList();
+            ViewBag.MapsKey = _configuration["GoogleMaps:ApiKey"];
+            ViewBag.Instagram =await _serviceInstagram.ListAsync(4);
             return View();
         }
 
