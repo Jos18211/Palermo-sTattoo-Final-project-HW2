@@ -95,3 +95,24 @@ h1, h2, h3, .navbar-brand {
     text-transform: uppercase;
     letter-spacing: 1px;
 }
+/* Titulos de la pagina naranja*/
+main h1 {
+    border-left: 6px solid #f47a20;
+    padding-left: .6rem;
+    margin: 1.5rem 0 1rem;
+}
+
+/*Tarjetas se elevan al pasar el mouse*/
+.tarjeta-hover{
+    transition: transform .2s, box-shadow .2s;
+}
+.tarjeta-hover:hover{
+    transform: translateY(-4px);
+    box-shadow: 0 .5rem 1rem rgba(244,122,32,.35);
+}
+/*Imagenes del catalogo forzadas del mismo tamaño*/
+.img-producto{
+    height: 260px;
+    object-fit: cover;
+}
+

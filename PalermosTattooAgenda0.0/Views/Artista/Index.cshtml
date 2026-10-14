@@ -2,12 +2,12 @@
 
 <h1>@ViewBag.Titulo</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
+<p class="d-flex gap-2">
+    <a class="btn btn-primary" asp-action="Create"><i class="bi bi-plus-lg"></i> Nuevo Artista</a>
+    <a class="btn btn-secondary" asp-action="Enviar"><i class="bi bi-send"></i> Enviar</a>
 </p>
-<div class="row">
-    <a class="btn btn-success" asp-controller="Artista" asp-action="Enviar">Enviar</a>
-</div>
+
+
 <table class="table">
     <thead>
         <tr>
@@ -31,9 +31,14 @@
                     @Html.DisplayFor(modelItem => item.Nombre)
                 </td>
                 <td>
-                    @Html.ActionLink("Edit", "Edit", new { id = item.IdArtista }) |
-                    @Html.ActionLink("Details", "Details", new { id = item.IdArtista }) |
-                    @Html.ActionLink("Delete", "Delete", new { id = item.IdArtista })
+                    <div class="btn-group btn-group-sm">
+                        <a class="btn btn-secondary" asp-action="Edit"
+                           asp-route-id="@item.IdArtista">Editar</a>
+                        <a class="btn btn-primary" asp-action="Details"
+                           asp-route-id="@item.IdArtista">Detalle</a>
+                        <a class="btn btn-danger" asp-action="Delete"
+                           asp-route-id="@item.IdArtista">Eliminar</a>
+                    </div>
                 </td>
             </tr>
         }
