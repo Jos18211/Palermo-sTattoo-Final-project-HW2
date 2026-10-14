@@ -170,3 +170,25 @@ main h1 {
     object-fit: cover;
 }
 
+/*Tarjeta de los detalles*/
+.card-detalle .card-header {
+    font-family: 'Oswald', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #f47a20;
+}
+.dato {
+    margin-bottom: .75rem;
+    overflow-wrap: anywhere;
+}
+
+.dato:last-child {
+    margin-bottom: 0;
+}
+
+.dato small {
+    display: block;
+    font-size: .8rem;
+    color: var(--bs-secondary-color);
+ }
+
