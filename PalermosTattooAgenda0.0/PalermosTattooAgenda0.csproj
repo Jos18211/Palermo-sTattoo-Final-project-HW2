@@ -28,7 +28,7 @@
 
   <ItemGroup>
     <Folder Include="Logs\" />
-    <Folder Include="wwwroot\Images\" />
+    <Folder Include="wwwroot\Images\artistas\" />
   </ItemGroup>
 
 </Project>
