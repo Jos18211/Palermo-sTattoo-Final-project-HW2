@@ -23,6 +23,7 @@ builder.Services.AddTransient<IRepositoryProducto, RepositoryProducto>();
 builder.Services.AddTransient<IRepositoryFactura, RepositoryFactura>();
 builder.Services.AddTransient<IRepositoryCita, RepositoryCita>();
 builder.Services.AddTransient<IRepositoryServicio, RepositoryServicio>();
+builder.Services.AddTransient<IRepositoryHorario, RepositoryHorario>();
 //Services
 builder.Services.AddMemoryCache();
 builder.Services.AddHttpClient<IServiceInstagram, ServiceInstagram>();
@@ -31,9 +32,11 @@ builder.Services.AddTransient<IServiceProducto, ServiceProducto>();
 builder.Services.AddTransient<IServiceCita, ServiceCita>();
 builder.Services.AddTransient<IServiceFactura, ServiceFactura>();
 builder.Services.AddTransient<IServiceServicio, ServiceServicio>();
+builder.Services.AddTransient<IServiceHorario, ServiceHorario>();
 //Configurar Automapper
 builder.Services.AddAutoMapper(config =>
 {
+    config.AddProfile<HorarioProfile>();
     config.AddProfile<ArtistaProfile>();
     config.AddProfile<CategoriaProfile>();
     config.AddProfile<ProductoProfile>();

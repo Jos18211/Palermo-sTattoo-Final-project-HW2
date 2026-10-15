@@ -36,10 +36,7 @@
                     @Model.HoraInicio.ToString("HH:mm") -
                     @Model.HoraFin.ToString("HH:mm")
                 </div>
-                <div class="dato">
-                    <small>Zona del cuerpo</small>
-                    @Model.ZonaCuerpo
-                </div>
+          
             </div>
         </div>
     </div>
@@ -100,30 +97,40 @@
             </div>
         </div>
     </div>
-    <div class="col-lg-6">
+     <div class="col-lg-6">
         <div class="card card-detalle h-100">
             <div class="card-header">
-                <i class="bi bi-clipboard-heart"></i>
-                Diseño y salud
+                <i class="bi bi-question-circle"></i>
+                Preguntas previas
             </div>
             <div class="card-body">
                 <div class="dato">
-                    <small>Referencia del diseño</small>
-                    @(Model.ReferenciaDiseno ?? "Sin referencia")
+                    <small>
+                        1. ¿En qué zona del cuerpo
+                        será el tatuaje?
+                    </small>
+                    @Model.ZonaCuerpo
                 </div>
                 <div class="dato">
-                    <small>¿Tiene alergias?</small>
+                    <small>2. ¿Tiene alguna alergia?</small>
                     @(Model.TieneAlergias ? "Sí" : "No")
                     @if (Model.TieneAlergias)
                     {
                         <span>- @Model.DetalleAlergias</span>
                     }
                 </div>
+                <div class="dato">
+                    <small>
+                        3. ¿Tiene una referencia
+                        del diseño?
+                    </small>
+                    @(Model.ReferenciaDiseno
+                      ?? "No, se diseñará en la consulta")
+                </div>
             </div>
         </div>
     </div>
 </div>
-
 <a class="btn btn-secondary mt-3" asp-action="Index">
     <i class="bi bi-arrow-left"></i> Regresar al listado
 </a>

@@ -10,6 +10,14 @@
 
     var instagram = ViewBag.Instagram as List<PublicacionInstagram> ?? new List<PublicacionInstagram>();
 
+
+    var horario = ViewBag.Horario
+      as IEnumerable<HorarioDTO>
+      ?? new List<HorarioDTO>();
+    string[] dias = { "", "Lunes", "Martes",
+      "Miércoles", "Jueves", "Viernes",
+      "Sábado", "Domingo" };
+
     //Ubicacion del estudio (latitud,longitud)
     var q = "10.018289,-84.178778";
     string clave = ViewBag.MapsKey ?? "";
@@ -23,6 +31,8 @@
           + "place?key=" + clave + "&q=" + q
           + "&zoom=17";
     }
+
+
     
 }
 
@@ -34,10 +44,10 @@
     </div>
     <div class="carousel-inner">
         <div class="carousel-item active">
-            <img src="~/images/carrusel-1.jpeg" class="d-block w-100" alt="Cátalogo" height="500">
+            <img src="~/images/carrusel-1.jpeg" class="d-block w-100" alt="Catálogo" height="500">
             <div class="carousel-caption d-none d-md-block">
                 <h5>Cátalogo</h5>
-                <p>Amplio Cátalogo de Servicios</p>
+                <p>Amplio Catálogo de Servicios</p>
             </div>
         </div>
         <div class="carousel-item">
@@ -143,44 +153,35 @@
             <i class="bi bi-instagram"></i> Síguenos
         </a>
         </div>
-    </section>
+    </section>         
 
-    <section class="seccion-inicio">
-        <div class="row g-4">
-            <div class="col-md-6">
-                <h2 class="titulo-seccion">Horario</h2>
-                <table class="table">
-                    <tr>
-                        <td>Lunes a viernes</td>
-                        <td class="text-end">9:00 - 19:00</td>
-                    </tr>
-                    <tr>
-                        <td>Sábado</td>
-                        <td class="text-end">10:00 - 19:00</td>
-                    </tr>
-                    <tr>
-                        <td>Domingo</td>
-                        <td class="text-end">11:00 - 19:00</td>
-                    </tr>
-                </table>
-            </div>
-            <div class="col-md-6">
-                <h2 class="titulo-seccion">Visítanos</h2>
-                <p>
-                    <i class="bi bi-geo-alt text-primary"></i>
-                    Alajuela, Costa Rica
-                </p>
-                <p>
-                    <i class="bi bi-whatsapp text-primary"></i>
-                    6127-8904
-                </p>
-                <p>
-                    <i class="bi bi-instagram text-primary"></i>
-                    palermott
-                </p>
-            </div>
-        </div>
-    </section>
+<section class="seccion-inicio">
+    <h2 class="titulo-seccion">Horario</h2>
+    <div class="table-responsive">
+        <table class="table text-center mb-0">
+            <thead>
+                <tr>
+                    @foreach (var h in horario)
+                    {
+                        <th>@dias[h.DiaSemana]</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    @foreach (var h in horario)
+                    {
+                        <td>
+                            @h.HoraInicio.ToString("HH:mm") -
+                            @h.HoraFin.ToString("HH:mm")
+                        </td>
+                    }
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
 <section class="seccion-inicio">
     <h2 class="titulo-seccion">Ubícanos</h2>
     <div class="ratio ratio-21x9 rounded overflow-hidden">

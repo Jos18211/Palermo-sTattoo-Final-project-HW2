@@ -14,26 +14,29 @@ namespace PalermosTattooAgenda0.Web.Controllers
         private readonly IServiceArtista _serviceArtista;
         private readonly IConfiguration _configuration;
         private readonly IServiceInstagram _serviceInstagram;
-
+        private readonly IServiceHorario _serviceHorario;
         public HomeController(ILogger<HomeController> logger, IWebHostEnvironment env
-                              , IServiceArtista serviceArtista, IConfiguration configuration, IServiceInstagram serviceInstagram)
+                              , IServiceArtista serviceArtista, IConfiguration configuration, IServiceInstagram serviceInstagram, IServiceHorario serviceHorario)
         {
             _logger = logger;
             _env = env;
             _configuration = configuration;
             _serviceArtista = serviceArtista;
             _serviceInstagram = serviceInstagram;
+            _serviceHorario = serviceHorario;
         }
 
         public async Task<IActionResult> Index()
         {
-           
+            ViewBag.Horario =
+                await _serviceHorario.ListHorarioEstudioAsync();
             ViewBag.Artistas =
                 await _serviceArtista.ListAsync();
             ViewBag.Trabajos = ListarImagenes("trabajos")
                 .Take(4).ToList();
             ViewBag.MapsKey = _configuration["GoogleMaps:ApiKey"];
             ViewBag.Instagram =await _serviceInstagram.ListAsync(4);
+            
             return View();
         }
 
