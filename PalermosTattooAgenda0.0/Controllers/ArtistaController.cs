@@ -38,9 +38,18 @@ namespace PalermosTattooAgenda0.Web.Controllers
         }
 
         // GET: ArtistaController/Details/5
-        public ActionResult Details(int id)
+        public async Task<ActionResult> Details(int? id)
         {
-            return View();
+            if (id == null)
+            {
+                return RedirectToAction("Index");
+            }
+            var @object = await _serviceArtista.FindByIdAsync(id.Value);
+            if (@object == null)
+            {
+                throw new Exception("Artista no existente");
+            }
+            return View(@object);
         }
 
         // GET: ArtistaController/Create

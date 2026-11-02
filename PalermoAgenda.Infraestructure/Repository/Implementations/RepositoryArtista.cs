@@ -18,9 +18,13 @@ namespace PalermoAgenda.Infraestructure.Repository.Implementations
         {
             _context = context;
         }
-        public Task<Artista> FindByIdAsync(int id)
+        public async Task<Artista> FindByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            //Obtener un Artista
+            var @object = await _context.Set<Artista>()
+                                .Where(x => x.IdArtista == id)
+                                .FirstOrDefaultAsync();
+            return @object!;
         }
         public async Task<ICollection<Artista>> ListAsync()
         {

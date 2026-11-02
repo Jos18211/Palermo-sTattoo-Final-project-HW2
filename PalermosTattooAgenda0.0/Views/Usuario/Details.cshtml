@@ -1,0 +1,64 @@
+﻿@model PalermoAgenda.Application.DTOs.UsuarioDTO
+
+@{
+    ViewData["Title"] = "Detalle de Usuarios";
+}
+
+<h1>Detalle Usuarios</h1>
+
+    <div class="col">
+        <h4>Usuarios</h4>
+        <hr />
+        <dl class="row">
+        
+            <dt class="col-sm-4">
+                @Html.DisplayNameFor(model => model.Nombre)
+            </dt>
+            <dd class="col-sm-8">
+                @Html.DisplayFor(model => model.Nombre)
+            </dd>
+        <dt class="col-sm-4">
+            @Html.DisplayNameFor(model => model.IdRol)
+        </dt>
+        <dd class="col-sm-8">
+            @Html.DisplayFor(model => model.IdRolNavigation.Descripcion)
+        </dd>
+        <dt class="col-sm-4">
+            @Html.DisplayNameFor(model => model.Telefono)
+        </dt>
+        <dd class="col-sm-8">
+            @Html.DisplayFor(model => model.Telefono)
+        </dd>
+            <dt class="col-sm-4">
+                @Html.DisplayNameFor(model => model.Email)
+            </dt>
+            <dd class="col-sm-8">
+                @Html.DisplayFor(model => model.Email)
+            </dd>
+            <dt class="col-sm-4">
+                @Html.DisplayNameFor(model => model.Direccion)
+            </dt>
+            <dd class="col-sm-8">
+            @Html.DisplayFor(model => model.Direccion)
+            </dd>
+        <dt class="col-sm-4">
+            @Html.DisplayNameFor(model => model.FechaNacimiento)
+        </dt>
+        <dd class="col-sm-8">
+            @Html.DisplayFor(model => model.FechaNacimiento)
+        </dd>
+
+        </dl>
+
+
+    </div>
+
+<div class="btn-group" role="group" aria-label="Acciones">
+    <a href="@Url.Action("Edit", new { id = Model.IdUsuario })" class="btn btn-secondary">
+        <i class="bi bi-pencil-fill"></i> Editar
+    </a>
+    <a asp-action="Index" class="btn btn-info">
+        <i class="bi bi-arrow-return-left"></i>
+        Regresar al listado
+    </a>
+</div>

@@ -17,10 +17,23 @@ namespace PalermoAgenda.Infraestructure.Repository.Implementations
         {
             _context = context;
         }
-        public Task<int> AddAsync(Factura entity)
+        public async Task<int> AddAsync(Factura entity)
         {
-            throw new NotImplementedException();
-
+            // 1. Descontar stock de cada producto del detalle
+            foreach (var detalle in entity.FacturaDetalle.Where(d => d.IdProducto != null))
+            {
+                var producto = await _context.Set<Producto>().FindAsync(detalle.IdProducto);
+                if (producto == null)
+                        throw new Exception($"Producto {detalle.IdProducto} no existe");
+                if (producto.Stock < detalle.Cantidad)
+                        throw new Exception($"Stock insuficiente para {producto.Nombre}");
+                producto.Stock -= detalle.Cantidad;
+            }
+            // 2. Agregar la factura (EF inserta también los FacturaDetalle)
+            await _context.Set<Factura>().AddAsync(entity);
+            // 3. Un solo SaveChanges: todo se guarda o nada
+            await _context.SaveChangesAsync();
+            return entity.IdFactura;
         }
 
         public async Task<Factura> FindByIdAsync(int id)

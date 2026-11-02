@@ -23,6 +23,8 @@ public partial class Producto
 
     public bool Estado { get; set; }
 
+    public int Stock { get; set; }
+
     public virtual ICollection<FacturaDetalle> FacturaDetalle { get; set; } = new List<FacturaDetalle>();
 
     public virtual CategoriaProducto IdCategoriaProductoNavigation { get; set; } = null!;

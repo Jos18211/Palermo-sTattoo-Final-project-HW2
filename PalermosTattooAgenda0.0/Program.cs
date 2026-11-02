@@ -24,6 +24,8 @@ builder.Services.AddTransient<IRepositoryFactura, RepositoryFactura>();
 builder.Services.AddTransient<IRepositoryCita, RepositoryCita>();
 builder.Services.AddTransient<IRepositoryServicio, RepositoryServicio>();
 builder.Services.AddTransient<IRepositoryHorario, RepositoryHorario>();
+builder.Services.AddTransient<IRepositoryUsuario, RepositoryUsuario>();
+builder.Services.AddTransient<IRepositoryCategoria, RepositoryCategoria>();
 //Services
 builder.Services.AddMemoryCache();
 builder.Services.AddHttpClient<IServiceInstagram, ServiceInstagram>();
@@ -33,6 +35,8 @@ builder.Services.AddTransient<IServiceCita, ServiceCita>();
 builder.Services.AddTransient<IServiceFactura, ServiceFactura>();
 builder.Services.AddTransient<IServiceServicio, ServiceServicio>();
 builder.Services.AddTransient<IServiceHorario, ServiceHorario>();
+builder.Services.AddTransient<IServiceUsuario, ServiceUsuario>();
+builder.Services.AddTransient<IServiceCategoria, ServiceCategoria>();
 //Configurar Automapper
 builder.Services.AddAutoMapper(config =>
 {
@@ -47,6 +51,8 @@ builder.Services.AddAutoMapper(config =>
     config.AddProfile<ServicioProfile>();
     config.AddProfile<EstadoCitaProfile>();
     config.AddProfile<CitaProfile>();
+   
+
 });
 // Configuar Conexión a la Base de Datos SQL
 builder.Services.AddDbContext<PalermosTattooContext>(options =>

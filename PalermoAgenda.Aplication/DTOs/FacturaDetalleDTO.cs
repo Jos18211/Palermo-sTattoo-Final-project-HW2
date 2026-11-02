@@ -16,6 +16,9 @@ namespace PalermoAgenda.Application.DTOs
         [Display(Name = "Producto")]
         public int? IdProducto { get; set; }
 
+        [Display(Name = "Producto")]
+        public string? NombreProducto { get; set; }
+
         [Display(Name = "Servicio")]
         public int? IdServicio { get; set; }
 
@@ -29,6 +32,8 @@ namespace PalermoAgenda.Application.DTOs
         [DisplayFormat(DataFormatString = "{0:n2}")]
         [Display(Name = "Subtotal")]
         public decimal Subtotal { get; set; }
+
+      
 
         public virtual ProductoDTO? IdProductoNavigation { get; set; }
         public virtual ServicioDTO? IdServicioNavigation { get; set; }

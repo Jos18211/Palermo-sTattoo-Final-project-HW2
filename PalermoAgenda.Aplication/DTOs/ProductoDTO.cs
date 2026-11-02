@@ -33,6 +33,10 @@ namespace PalermoAgenda.Application.DTOs
         public byte[]? Imagen { get; set; }
         public bool Estado { get; set; }
 
+        [Display(Name = "Existencias")]
+        [Range(0, int.MaxValue, ErrorMessage = "{0} no puede ser negativo")]
+        public int Stock { get; set; }
+
         public virtual CategoriaDTO IdCategoriaProductoNavigation { get; set; } = null!;
         public virtual List<FacturaDetalleDTO> FacturaDetalle { get; set; } = null!;
     }

@@ -1,6 +1,8 @@
-﻿using PalermoAgenda.Application.Services.Interfaces;
+﻿using PalermoAgenda.Application.DTOs;
+using PalermoAgenda.Application.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using X.PagedList.Extensions;
 
 namespace PalermosTattooAgenda0.Web.Controllers
@@ -8,95 +10,190 @@ namespace PalermosTattooAgenda0.Web.Controllers
     public class ProductoController : Controller
     {
         private readonly IServiceProducto _serviceProducto;
-
-        public ProductoController(IServiceProducto serviceProducto)
+        private readonly IServiceCategoria _serviceCategoria;
+        private readonly ILogger<ProductoController> _logger;
+        public ProductoController(IServiceProducto servicioProducto,
+            IServiceArtista serviceArtista, IServiceCategoria serviceCategoria,
+            ILogger<ProductoController> logger)
         {
-            _serviceProducto = serviceProducto;
-
+            _serviceProducto = servicioProducto;
+            _serviceCategoria = serviceCategoria;
+            _logger = logger;
         }
-
-
-        // GET: ProductoController
+        // GET: LibroController
         public async Task<ActionResult> Index()
         {
+            //Recibir el mensaje de TempData
+            if (TempData.ContainsKey("Mensaje"))
+            {
+                ViewBag.NotificationMessage = TempData["Mensaje"];
+            }
+            ViewBag.ListCategorias = await _serviceCategoria.ListAsync();
             var collection = await _serviceProducto.ListAsync();
             return View(collection);
         }
-
+        public async Task<IActionResult> buscarxCategoria(int IdCategoria)
+        {
+            var collection = await _serviceProducto.ListAsync();
+            if (IdCategoria != 0)
+            {
+                collection = await _serviceProducto.GetProductoByCategoria(IdCategoria) ?? new List<ProductoDTO>(); ;
+            }
+            return PartialView("_ListProductos", collection);
+        }
         public async Task<ActionResult> IndexAdmin(int? page)
         {
             var collection = await _serviceProducto.ListAsync();
             return View(collection.ToPagedList(page ?? 1, 5));
         }
+        // GET: LibroController/Details/5
+        public async Task<ActionResult> Details(int? id)
+        {
+            try
+            {
+                if (id == null)
+                {
+                    return RedirectToAction("IndexAdmin");
+                }
+                var @object = await _serviceProducto.FindByIdAsync(id.Value);
+                if (@object == null)
+                {
+                    throw new Exception("Producto no existente");
+                }
+                return View(@object);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+        // GET: LibroController/Create
+        public async Task<IActionResult> Create()
+        {
 
-        // GET: ProductoController/Details/5
-        public async Task<ActionResult> Details(int id)
+            var categorias = await _serviceCategoria.ListAsync();
+            ViewBag.ListCategorias = new SelectList(
+                 items: categorias,
+                 dataValueField: nameof(CategoriaDTO.IdCategoriaProducto),
+                 dataTextField: nameof(CategoriaDTO.Nombre));
+            return View();
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(ProductoDTO dto, IFormFile imageFile)
+        {
+            MemoryStream target = new MemoryStream();
+            // Cuando es Insert Image viene en null porque se pasa diferente
+            if (dto.Imagen == null)
+            {
+                if (imageFile != null)
+                {
+                    imageFile.OpenReadStream().CopyTo(target);
+                    dto.Imagen = target.ToArray();
+                    ModelState.Remove("Imagen");
+                }
+            }
+            if (!ModelState.IsValid)
+            {
+                // Lee del ModelState todos los errores que
+                // vienen para el lado del server
+                string errors = string.Join("; ", ModelState.Values
+                                   .SelectMany(x => x.Errors)
+                                   .Select(x => x.ErrorMessage));
+                // Response errores
+                return View(dto);
+            }
+            await _serviceProducto.AddAsync(dto);
+            //ViewBag.NotificationMessage= Util.SweetAlertHelper.Mensaje(
+            //    "Crear Libro",
+            //    "Libro creado", Util.SweetAlertMessageType.success);
+            TempData["Mensaje"] = Util.SweetAlertHelper.Mensaje(
+                "Crear Producto",
+                "Producto creado", Util.SweetAlertMessageType.success);
+            return RedirectToAction("Index");
+        }
+        // GET: LibroController/Edit/5
+        public async Task<IActionResult> Edit(int id)
+        {
+            var @object = await _serviceProducto.FindByIdAsync(id);
+
+            var categorias = await _serviceCategoria.ListAsync();
+
+            ViewBag.ListCategorias = new SelectList(
+                    items: categorias,
+                    dataValueField: nameof(CategoriaDTO.IdCategoriaProducto),
+                    dataTextField: nameof(CategoriaDTO.Nombre),
+                    selectedValue: @object.IdCategoriaProducto
+                );
+            return View(@object);
+        }
+        // POST: LibroController/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, ProductoDTO dto, IFormFile imageFile)
+        {
+
+
+            MemoryStream target = new MemoryStream();
+            // Cuando es Insert Image viene en null porque se pasa diferente
+            if (dto.Imagen == null)
+            {
+
+                if (imageFile != null)
+                {
+                    imageFile.OpenReadStream().CopyTo(target);
+                    dto.Imagen = target.ToArray();
+                    ModelState.Remove("Imagen");
+                }
+                else
+                {
+                    var actual = await _serviceProducto.FindByIdAsync(id);
+                    dto.Imagen = actual.Imagen;
+                }
+
+            }
+
+            if (!ModelState.IsValid)
+            {
+                // Lee del ModelState todos los errores que
+                // vienen para el lado del server
+                string errors = string.Join("; ", ModelState.Values
+                                   .SelectMany(x => x.Errors)
+                                   .Select(x => x.ErrorMessage));
+                ViewBag.ErrorMessage = errors;
+                return View(dto);
+            }
+            else
+            {
+                await _serviceProducto.UpdateAsync(id, dto);
+                return RedirectToAction("IndexAdmin");
+            }
+        }
+        // GET: LibroController/Delete/5
+        public async Task<IActionResult> Delete(int id)
         {
             var @object = await _serviceProducto.FindByIdAsync(id);
             return View(@object);
         }
-
-        // GET: ProductoController/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: ProductoController/Create
+        // POST: LibroController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public async Task<IActionResult> Delete(int id, IFormCollection collection)
         {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+            await _serviceProducto.DeleteAsync(id);
+            return RedirectToAction("Index");
         }
-
-        // GET: ProductoController/Edit/5
-        public ActionResult Edit(int id)
+        public async Task<IActionResult> GetProductoByName(string filtro)
         {
-            return View();
-        }
-
-        // POST: ProductoController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
-        {
-            try
+            var collection = await _serviceProducto.FindByNameAsync(filtro);
+            return Json(collection.Select(p => new
             {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: ProductoController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: ProductoController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+                p.IdProducto,
+                p.Nombre,
+                p.Precio,
+                p.Stock,
+                p.Imagen
+            }));
         }
     }
 }

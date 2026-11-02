@@ -48,14 +48,32 @@ namespace PalermoAgenda.Infraestructure.Repository.Implementations
             throw new NotImplementedException();
         }
 
-        public Task<ICollection<Producto>> FindByNameAsync(string nombre)
+        public async Task<ICollection<Producto>> FindByNameAsync(string nombre)
         {
-            throw new NotImplementedException();
+            var collection = await _context.Set<Producto>()
+                               .Where(x => x.Nombre.Contains(nombre))
+                               .Include(x => x.IdCategoriaProductoNavigation)
+                               .OrderByDescending(x => x.IdProducto)
+                               .AsNoTracking()
+                               .ToListAsync();
+
+            return collection;
+
         }
 
-        public Task<ICollection<Producto>> GetProductoByCategoria(int idCategoriaProducto)
+        public async Task<ICollection<Producto>> GetProductoByCategoria(int idCategoriaProducto)
         {
-            throw new NotImplementedException();
+            var collection = await _context.Set<Producto>()
+                               .Where(x => x.IdCategoriaProducto == idCategoriaProducto)
+                               .Include(x => x.IdCategoriaProductoNavigation)
+                               .OrderByDescending(x => x.IdProducto)
+                               .AsNoTracking()
+                               .ToListAsync();
+
+            return collection;
+
+           
+                           
         }
 
         public Task DeleteAsync(int id)
