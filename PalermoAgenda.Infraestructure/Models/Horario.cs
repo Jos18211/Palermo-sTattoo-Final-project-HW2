@@ -11,9 +11,12 @@ public partial class Horario
 
     public byte DiaSemana { get; set; }
 
+
     public TimeOnly HoraInicio { get; set; }
 
     public TimeOnly HoraFin { get; set; }
+
+    public DateOnly Fecha { get; set; }
 
     public virtual Artista IdArtistaNavigation { get; set; } = null!;
 }

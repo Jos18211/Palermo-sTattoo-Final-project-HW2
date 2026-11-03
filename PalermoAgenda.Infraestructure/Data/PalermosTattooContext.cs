@@ -243,7 +243,7 @@ public partial class PalermosTattooContext : DbContext
         {
             entity.HasKey(e => e.IdHorario);
 
-            entity.HasIndex(e => new { e.IdArtista, e.DiaSemana }, "UQ_Horario_ArtistaDia").IsUnique();
+            entity.HasIndex(e => new { e.IdArtista, e.Fecha }, "IX_Horario_ArtistaFecha");
 
             entity.Property(e => e.HoraFin).HasPrecision(0);
             entity.Property(e => e.HoraInicio).HasPrecision(0);
