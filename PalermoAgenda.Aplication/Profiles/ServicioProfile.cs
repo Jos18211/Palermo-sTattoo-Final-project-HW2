@@ -14,7 +14,11 @@ namespace PalermoAgenda.Application.Profiles
     {
         public ServicioProfile()
         {
-            CreateMap<ServicioDTO, Servicio>().ReverseMap();
+            CreateMap<Servicio, ServicioDTO>();
+            CreateMap<ServicioDTO, Servicio>()
+                .ForMember(d => d.IdArtista, o => o.Ignore())
+                .ForMember(d => d.Cita, o => o.Ignore())
+                .ForMember(d => d.FacturaDetalle, o => o.Ignore());
         }
     }
 }

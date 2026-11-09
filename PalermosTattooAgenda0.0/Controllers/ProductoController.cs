@@ -12,12 +12,13 @@ namespace PalermosTattooAgenda0.Web.Controllers
         private readonly IServiceProducto _serviceProducto;
         private readonly IServiceCategoria _serviceCategoria;
         private readonly ILogger<ProductoController> _logger;
-        public ProductoController(IServiceProducto servicioProducto,
-            IServiceArtista serviceArtista, IServiceCategoria serviceCategoria,
+        private readonly IWebHostEnvironment _env;
+        public ProductoController(IServiceProducto servicioProducto, IWebHostEnvironment env, IServiceCategoria serviceCategoria,
             ILogger<ProductoController> logger)
         {
             _serviceProducto = servicioProducto;
             _serviceCategoria = serviceCategoria;
+            _env = env;
             _logger = logger;
         }
         // GET: LibroController
@@ -43,6 +44,10 @@ namespace PalermosTattooAgenda0.Web.Controllers
         }
         public async Task<ActionResult> IndexAdmin(int? page)
         {
+            if (TempData.ContainsKey("Mensaje"))
+            {
+                ViewBag.NotificationMessage = TempData["Mensaje"];
+            }
             var collection = await _serviceProducto.ListAsync();
             return View(collection.ToPagedList(page ?? 1, 5));
         }
@@ -80,7 +85,7 @@ namespace PalermosTattooAgenda0.Web.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(ProductoDTO dto, IFormFile imageFile)
+        public async Task<IActionResult> Create(ProductoDTO dto, IFormFile? imageFile)
         {
             MemoryStream target = new MemoryStream();
             // Cuando es Insert Image viene en null porque se pasa diferente
@@ -92,6 +97,11 @@ namespace PalermosTattooAgenda0.Web.Controllers
                     dto.Imagen = target.ToArray();
                     ModelState.Remove("Imagen");
                 }
+                else
+                {
+                    dto.Imagen = await System.IO.File.ReadAllBytesAsync(
+                    Path.Combine(_env.WebRootPath,"images","nophoto.png"));
+                }
             }
             if (!ModelState.IsValid)
             {
@@ -100,7 +110,14 @@ namespace PalermosTattooAgenda0.Web.Controllers
                 string errors = string.Join("; ", ModelState.Values
                                    .SelectMany(x => x.Errors)
                                    .Select(x => x.ErrorMessage));
+                ViewBag.NotificationMessage = Util.SweetAlertHelper.Mensaje("Producto", errors, Util.SweetAlertMessageType.error);
                 // Response errores
+                var categorias = await _serviceCategoria.ListAsync();
+                ViewBag.ListCategorias = new SelectList(
+                     items: categorias,
+                     dataValueField: nameof(CategoriaDTO.IdCategoriaProducto),
+                     dataTextField: nameof(CategoriaDTO.Nombre));
+
                 return View(dto);
             }
             await _serviceProducto.AddAsync(dto);
@@ -110,7 +127,7 @@ namespace PalermosTattooAgenda0.Web.Controllers
             TempData["Mensaje"] = Util.SweetAlertHelper.Mensaje(
                 "Crear Producto",
                 "Producto creado", Util.SweetAlertMessageType.success);
-            return RedirectToAction("Index");
+            return RedirectToAction("IndexAdmin");
         }
         // GET: LibroController/Edit/5
         public async Task<IActionResult> Edit(int id)
@@ -118,19 +135,26 @@ namespace PalermosTattooAgenda0.Web.Controllers
             var @object = await _serviceProducto.FindByIdAsync(id);
 
             var categorias = await _serviceCategoria.ListAsync();
-
-            ViewBag.ListCategorias = new SelectList(
-                    items: categorias,
-                    dataValueField: nameof(CategoriaDTO.IdCategoriaProducto),
-                    dataTextField: nameof(CategoriaDTO.Nombre),
-                    selectedValue: @object.IdCategoriaProducto
-                );
+            if (@object == null) {
+                return RedirectToAction("IndexAdmin");
+            }
+            else
+            {
+                
+           
+                ViewBag.ListCategorias = new SelectList(
+                        items: categorias,
+                        dataValueField: nameof(CategoriaDTO.IdCategoriaProducto),
+                        dataTextField: nameof(CategoriaDTO.Nombre),
+                        selectedValue: @object.IdCategoriaProducto
+                    );
             return View(@object);
+            }
         }
         // POST: LibroController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, ProductoDTO dto, IFormFile imageFile)
+        public async Task<IActionResult> Edit(int id, ProductoDTO dto, IFormFile? imageFile)
         {
 
 
@@ -160,12 +184,25 @@ namespace PalermosTattooAgenda0.Web.Controllers
                 string errors = string.Join("; ", ModelState.Values
                                    .SelectMany(x => x.Errors)
                                    .Select(x => x.ErrorMessage));
-                ViewBag.ErrorMessage = errors;
+                ViewBag.NotificationMessage = Util.SweetAlertHelper.Mensaje("Producto", errors, Util.SweetAlertMessageType.error);
+
+
+                var categorias = await _serviceCategoria.ListAsync();
+                ViewBag.ListCategorias = new SelectList(
+                    
+                     items: categorias,
+                     dataValueField: nameof(CategoriaDTO.IdCategoriaProducto),
+                     dataTextField: nameof(CategoriaDTO.Nombre),
+                     selectedValue: dto.IdCategoriaProducto);
+
                 return View(dto);
             }
             else
             {
                 await _serviceProducto.UpdateAsync(id, dto);
+                TempData["Mensaje"] = Util.SweetAlertHelper.Mensaje(
+                "Editar Producto",
+                "Producto actualizado", Util.SweetAlertMessageType.success);
                 return RedirectToAction("IndexAdmin");
             }
         }

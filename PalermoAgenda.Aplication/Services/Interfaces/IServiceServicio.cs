@@ -10,7 +10,13 @@ namespace PalermoAgenda.Application.Services.Interfaces
 {
     public interface IServiceServicio
     {
+        Task<ICollection<ServicioDTO>> FindByNameAsync(string nombre);
         Task<ICollection<ServicioDTO>> ListAsync();
-        Task<ServicioDTO?> FindByIdAsync(int id);
+        Task<ServicioDTO?> FindByIdAsync(int id);  
+        Task<int> AddAsync(ServicioDTO dto);
+        Task DeleteAsync(int id);
+        Task UpdateAsync(int id, ServicioDTO dto);
+        Task<ICollection<ServicioDTO>> GetServicioByEstilo(string estilo);
+
     }
 }

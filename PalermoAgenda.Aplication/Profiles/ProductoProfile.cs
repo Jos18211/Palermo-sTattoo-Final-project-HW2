@@ -13,7 +13,9 @@ namespace PalermoAgenda.Application.Profiles
     {
         public ProductoProfile()
         {
-            CreateMap<ProductoDTO, Producto>().ReverseMap();
+            CreateMap<Producto, ProductoDTO>();
+            CreateMap<ProductoDTO, Producto>()
+                .ForMember(d => d.IdCategoriaProductoNavigation, o => o.Ignore());
         }
     }
 }

@@ -35,17 +35,22 @@ namespace PalermoAgenda.Infraestructure.Repository.Implementations
             var @object = await _context.Set<Producto>()
                                 .Where(x => x.IdProducto == id)
                                 .Include(x => x.IdCategoriaProductoNavigation)
-                                .FirstAsync();
+                                .FirstOrDefaultAsync();
             return @object!;
         }
-        public Task<int> AddAsync(Producto entity)
+        public async Task<int> AddAsync(Producto entity)
         {
-            throw new NotImplementedException();
+            // 1. Agregar la Producto 
+            await _context.Set<Producto>().AddAsync(entity);
+            // 2. SaveChanges
+            await _context.SaveChangesAsync();
+
+            return entity.IdProducto;
         }
 
-        public Task UpdateAsync(Producto entity)
+        public async Task UpdateAsync(Producto entity)
         {
-            throw new NotImplementedException();
+            await _context.SaveChangesAsync();
         }
 
         public async Task<ICollection<Producto>> FindByNameAsync(string nombre)

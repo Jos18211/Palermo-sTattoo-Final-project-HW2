@@ -10,9 +10,14 @@ namespace PalermoAgenda.Infraestructure.Repository.Interfaces
 {
     public interface IRepositoryServicio
     {
-       
+
+        Task<ICollection<Servicio>> FindByNameAsync(string nombre);
         Task<ICollection<Servicio>> ListAsync();
         Task<Servicio?> FindByIdAsync(int id);
+        Task<int> AddAsync(Servicio entity);
+        Task DeleteAsync(int id);
+        Task UpdateAsync(Servicio entity);
+        Task<ICollection<Servicio>> GetServicioByEstilo(string estilo);
 
     }
 }

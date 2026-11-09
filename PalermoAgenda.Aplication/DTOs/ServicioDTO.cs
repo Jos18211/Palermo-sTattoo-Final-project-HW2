@@ -14,20 +14,37 @@ namespace PalermoAgenda.Application.DTOs
         public int IdServicio { get; set; }
 
         [Display(Name = "Nombre")]
+        [Required(ErrorMessage = "{0} es requerido")]
+        [StringLength(100, MinimumLength = 3)]
         public string Nombre { get; set; } = null!;
      
 
         [Display(Name = "Descripcion")]
+        [Required(ErrorMessage = "{0} es requerido")]
+        [StringLength(500)]
         public string Descripcion { get; set; } = null!;
 
+        [Display(Name = "Precio")]
         [DisplayFormat(DataFormatString = "{0:n2}")]
+        [Required(ErrorMessage = "{0} es requerido")]
+        [Range(1, 99999999, ErrorMessage = "{0} debe ser mayor a cero")]
         public decimal Precio { get; set; }
 
         [Display(Name = "Duracion (min)")]
+        [Required(ErrorMessage = "{0} es requerido")]
+        [Range(30, 480, ErrorMessage = "{0} Debe estar entre 30 y 480 minutos")]
         public int DuracionMinutos { get; set; }
-       
+
+
+        [Display(Name = "Estilo")]
+        [Required(ErrorMessage = "{0} es requerido")]
+        [StringLength(50)]
         public string Estilo { get; set; } = null!;
 
+
+        [Display(Name = "Complejidad")]
+        [Required(ErrorMessage = "{0} es requerido")]
+        [StringLength(10)]
         public string Complejidad { get; set; } = null!;
 
         public bool Estado { get; set; }

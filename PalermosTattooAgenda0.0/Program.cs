@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Localization;
+using Microsoft.EntityFrameworkCore;
 using PalermoAgenda.Application.Profiles;
 using PalermoAgenda.Application.Services.Implementations;
 using PalermoAgenda.Application.Services.Interfaces;
@@ -5,11 +7,12 @@ using PalermoAgenda.Infraestructure.Data;
 using PalermoAgenda.Infraestructure.Repository.Implementations;
 using PalermoAgenda.Infraestructure.Repository.Interfaces;
 using PalermosTattooAgenda0.Web.Middleware;
-using Microsoft.EntityFrameworkCore;
+using PalermosTattooAgenda0.Web.Services;
 using Serilog;
 using Serilog.Events;
+using System.Globalization;
 using System.Text;
-using PalermosTattooAgenda0.Web.Services;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -103,6 +106,18 @@ app.UseSerilogRequestLogging();
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
+
+
+var cultura = new CultureInfo("es-CR");
+cultura.NumberFormat.NumberDecimalSeparator = ".";
+cultura.NumberFormat.NumberGroupSeparator = ",";
+app.UseRequestLocalization(new RequestLocalizationOptions
+{
+    DefaultRequestCulture = new RequestCulture(cultura),
+    SupportedCultures = new[] { cultura },
+    SupportedUICultures = new[] { cultura }
+});
 
 app.UseRouting();
 
