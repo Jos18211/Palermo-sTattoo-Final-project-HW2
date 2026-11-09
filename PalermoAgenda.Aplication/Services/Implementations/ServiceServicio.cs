@@ -25,6 +25,16 @@ namespace PalermoAgenda.Application.Services.Implementations
             // Return lista
             return collection;
         }
+
+        public async Task<ICollection<ServicioDTO>> ListAsyncAdmin()
+        {
+            //Obtener datos del repositorio
+            var list = await _repository.ListAsyncAdmin();
+            //Map List<Artista> a ICollection<ArtistaDTO>
+            var collection = _mapper.Map<ICollection<ServicioDTO>>(list);
+            // Return lista
+            return collection;
+        }
         public async Task<ICollection<ServicioDTO>> FindByNameAsync(string nombre)
         {
             var list = await _repository.FindByNameAsync(nombre);

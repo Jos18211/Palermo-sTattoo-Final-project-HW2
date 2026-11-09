@@ -24,6 +24,16 @@ namespace PalermoAgenda.Infraestructure.Repository.Implementations
 
             return collection;
         }
+        public async Task<ICollection<Servicio>> ListAsyncAdmin()
+        {
+            //Servicios activos ordenados por precio
+            var collection = await _context.Set<Servicio>()
+                .OrderBy(x => x.Precio)
+                .AsNoTracking()
+                .ToListAsync();
+
+            return collection;
+        }
         public async Task<Servicio?> FindByIdAsync(int id)
         {
             //Servicio con los artistas que lo realizan 
@@ -64,7 +74,7 @@ namespace PalermoAgenda.Infraestructure.Repository.Implementations
         public async Task<ICollection<Servicio>> GetServicioByEstilo(string estilo)
         {
             var collection = await _context.Set<Servicio>()
-                               .Where(x => x.Estilo == estilo)
+                               .Where(x => x.Estado && x.Estilo == estilo)
                                .OrderByDescending(x => x.IdServicio)
                                .AsNoTracking()
                                .ToListAsync();
@@ -75,9 +85,13 @@ namespace PalermoAgenda.Infraestructure.Repository.Implementations
 
         }
 
-        public Task DeleteAsync(int id)
+        public async Task DeleteAsync(int id)
         {
-            throw new NotImplementedException();
+            // Borrado lógico: no se elimina, se desactiva
+            var entity = await _context.Set<Servicio>().FindAsync(id);
+            if (entity == null) return;
+            entity.Estado = false;
+            await _context.SaveChangesAsync();
         }
 
     }

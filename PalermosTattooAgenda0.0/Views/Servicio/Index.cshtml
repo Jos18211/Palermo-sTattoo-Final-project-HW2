@@ -1,63 +1,55 @@
-﻿@using PalermoAgenda.Application.DTOs
-@model IEnumerable<ServicioDTO>
+﻿@model IEnumerable<PalermoAgenda.Application.DTOs.ServicioDTO>
 @{
     ViewData["Title"] = "Servicios";
 }
 
-<section >
-    <h1>Nuestros servicios</h1>
-    <div class="row row-cols-1 row-cols-md-2
-              row-cols-lg-4 g-4">
-        @foreach (var s in Model)
-        {
-            <div class="col">
-                <div class="card h-100 tarjeta-hover">
-                    @if (s.Imagen != null && s.Imagen.Length > 0)
-                    {
-                        var b64 = Convert
-                        .ToBase64String(s.Imagen);
-                        <img class="card-img-top img-servicio"
-                             src="data:image/jpeg;base64,@b64"
-                             alt="@s.Nombre" />
-                    }
-                    else
-                    {
-                        <div class="sin-imagen">
-                            <i class="bi bi-brush"></i>
-                        </div>
-                    }
+<h1>Catálogo de servicios</h1>
 
-                    <div class="card-body">
-                        <span class="badge bg-secondary mb-2">
-                            @s.Estilo
-                        </span>
-                        <h5 class="card-title">@s.Nombre</h5>
-                        <p class="small text-muted">
-                            @s.Descripcion
-                        </p>
-                    </div>
-                    <div class="card-footer d-flex
-                          justify-content-between">
-                        <span class="fw-bold text-primary">
-                            &#8353;@s.Precio.ToString("N0")
-                        </span>
-                        <span class="small text-muted">
-                            <i class="bi bi-clock"></i>
-                            @s.DuracionMinutos min
-                        </span>
-                    </div>
-                    <div class="card-footer bg-transparent border-0">
-                        <a class="btn btn-primary w-100"
-                           asp-action="Details"
-                           asp-route-id="@s.IdServicio">
-                            <i class="bi bi-zoom-in"></i> Detalle
-                        </a>
-                    </div>
-                </div>
-            </div>
-        }
+<!-- Filtro por categoría (del lab, pero horizontal) -->
+<div class="d-flex flex-wrap gap-2 mb-4">
+    <button type="button" class="btn btn-outline-primary btn-estilo active"
+            onclick="buscarxEstilo('', this)">
+        Todos
+    </button>
+    @foreach (var estilo in (List<string>)ViewBag.Estilos)
+    {
+
+        <button type="button" class="btn btn-outline-primary btn-estilo"
+                onclick="buscarxEstilo('@estilo', this)">
+            @estilo
+        </button>
+    }
+</div>
+
+<section>
+    <div id="listaServicios" class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-4">
+        @await Html.PartialAsync("_ListServicios", Model)
     </div>
-
-    
-
 </section>
+
+@section Scripts {
+    <script type="text/javascript">
+        function buscarxEstilo(estilo, boton) {
+            const divLista = document.getElementById("listaServicios")
+            const myRequest = '@Url.Action("buscarxEstilo", "Servicio")'
+
+            // Marcar el botón seleccionado
+            document.querySelectorAll(".btn-estilo").forEach(b => b.classList.remove("active"))
+            boton.classList.add("active")
+
+            fetch(myRequest + "?estilo=" + estilo, { method: 'GET' })
+                .then(function (response) {
+                    if (!response.ok) {
+                        return response.text().then(text => { throw new Error(text) })
+                    }
+                    return response.text()
+                })
+                .then((text) => {
+                    divLista.innerHTML = text
+                })
+                .catch(error => {
+                    Swal.fire({ title: "Error", text: error.message, icon: "error" })
+                })
+        }
+    </script>
+}

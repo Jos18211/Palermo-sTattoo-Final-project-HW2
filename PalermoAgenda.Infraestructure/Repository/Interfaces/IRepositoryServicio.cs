@@ -13,6 +13,7 @@ namespace PalermoAgenda.Infraestructure.Repository.Interfaces
 
         Task<ICollection<Servicio>> FindByNameAsync(string nombre);
         Task<ICollection<Servicio>> ListAsync();
+        Task<ICollection<Servicio>> ListAsyncAdmin();
         Task<Servicio?> FindByIdAsync(int id);
         Task<int> AddAsync(Servicio entity);
         Task DeleteAsync(int id);
