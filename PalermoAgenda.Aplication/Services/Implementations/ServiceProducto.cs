@@ -65,6 +65,15 @@ namespace PalermoAgenda.Application.Services.Implementations
             // Return Data
             return collection;
         }
+        public async Task<ICollection<ProductoDTO>> ListAsyncAdmin()
+        {
+            // Get data from Repository
+            var list = await _repository.ListAsyncAdmin();
+            // Map List<Producto> to ICollection<ProductoDTO>
+            var collection = _mapper.Map<ICollection<ProductoDTO>>(list);
+            // Return Data
+            return collection;
+        }
 
         public async Task UpdateAsync(int id, ProductoDTO dto)
         {

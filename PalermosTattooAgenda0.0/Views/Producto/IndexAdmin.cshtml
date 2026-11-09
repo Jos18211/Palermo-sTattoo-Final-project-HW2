@@ -1,4 +1,4 @@
-@model IEnumerable<PalermoAgenda.Application.DTOs.ProductoDTO>
+﻿@model IEnumerable<PalermoAgenda.Application.DTOs.ProductoDTO>
 @using X.PagedList;
 @using X.PagedList.Mvc.Core;
 @{
@@ -54,6 +54,18 @@
                         <a href="@Url.Action("Details", new { id = item.IdProducto })" class="btn btn-info">
                             <i class="bi bi-zoom-in"></i> Detalle
                         </a>
+                        @if (item.Estado)
+                        {
+                            <form asp-action="Delete" asp-route-id="@item.IdProducto" method="post" class="d-inline form-Inactivar">
+                                <button type="submit" class="btn btn-danger">
+                                    <i class="bi bi-trash-fill"></i> Inactivar
+                                </button>
+                            </form>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary align-self-center ms-2">Inactivo</span>
+                        }
                     </div>
                 </td>
             </tr>
@@ -61,7 +73,7 @@
     </tbody>
     <tfoot>
         <tr>
-            <td colspan="5">
+            <td colspan="6">
                 <div class="btn-toolbar d-flex justify-content-end" role="toolbar">
                     <div class="btn-group" role="group">
                         @Html.PagedListPager((IPagedList)Model, page =>
@@ -79,3 +91,21 @@
         </tr>
     </tfoot>
 </table>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll(".form-Inactivar").forEach(form => {
+            form.addEventListener("submit", e => {
+                e.preventDefault();
+                Swal.fire({
+                    title: "¿Inactivar producto?",
+                    text: "Dejará de mostrarse en el catálogo. Puede reactivarlo desde Editar.",
+                    icon: "warning",
+                    cancelButtonText: "Cancelar",
+                    confirmButtonText: "Sí, Inactivar"
+                   
+                }).then(r => { if (r.isConfirmed) form.submit(); });
+            });
+        });
+    </script>
+}

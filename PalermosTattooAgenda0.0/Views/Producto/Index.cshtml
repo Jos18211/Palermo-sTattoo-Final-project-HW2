@@ -1,11 +1,11 @@
-@model IEnumerable<PalermoAgenda.Application.DTOs.ProductoDTO>
+Ôªø@model IEnumerable<PalermoAgenda.Application.DTOs.ProductoDTO>
 @{
     ViewData["Title"] = "Productos";
 }
 
-<h1>Cat·logo de productos</h1>
+<h1>Cat√°logo de productos</h1>
 
-<!-- Filtro por categorÌa (del lab, pero horizontal) -->
+<!-- Filtro por categor√≠a -->
 <div class="d-flex flex-wrap gap-2 mb-4">
     <button type="button" class="btn btn-outline-primary btn-categoria active"
             onclick="buscarxCategoria(0, this)">
@@ -32,7 +32,7 @@
             const divLista = document.getElementById("listaProductos")
             const myRequest = '@Url.Action("buscarxCategoria", "Producto")'
 
-            // Marcar el botÛn seleccionado
+            // Marcar el bot√≥n seleccionado
             document.querySelectorAll(".btn-categoria").forEach(b => b.classList.remove("active"))
             boton.classList.add("active")
 

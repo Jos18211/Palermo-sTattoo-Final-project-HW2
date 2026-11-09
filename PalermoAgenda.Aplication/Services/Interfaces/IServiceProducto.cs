@@ -12,6 +12,7 @@ namespace PalermoAgenda.Application.Services.Interfaces
     {
         Task<ICollection<ProductoDTO>> FindByNameAsync(string nombre);
         Task<ICollection<ProductoDTO>> ListAsync();
+        Task<ICollection<ProductoDTO>> ListAsyncAdmin();
         Task<ProductoDTO> FindByIdAsync(int id);
         Task<int> AddAsync(ProductoDTO dto);
         Task DeleteAsync(int id);

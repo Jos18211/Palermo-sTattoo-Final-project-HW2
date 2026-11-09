@@ -1,8 +1,9 @@
-﻿using PalermoAgenda.Application.DTOs;
-using PalermoAgenda.Application.Services.Interfaces;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using PalermoAgenda.Application.DTOs;
+using PalermoAgenda.Application.Services.Implementations;
+using PalermoAgenda.Application.Services.Interfaces;
 using X.PagedList.Extensions;
 
 namespace PalermosTattooAgenda0.Web.Controllers
@@ -48,7 +49,7 @@ namespace PalermosTattooAgenda0.Web.Controllers
             {
                 ViewBag.NotificationMessage = TempData["Mensaje"];
             }
-            var collection = await _serviceProducto.ListAsync();
+            var collection = await _serviceProducto.ListAsyncAdmin();
             return View(collection.ToPagedList(page ?? 1, 5));
         }
         // GET: LibroController/Details/5
@@ -206,19 +207,17 @@ namespace PalermosTattooAgenda0.Web.Controllers
                 return RedirectToAction("IndexAdmin");
             }
         }
-        // GET: LibroController/Delete/5
-        public async Task<IActionResult> Delete(int id)
-        {
-            var @object = await _serviceProducto.FindByIdAsync(id);
-            return View(@object);
-        }
+        
         // POST: LibroController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete(int id, IFormCollection collection)
+        public async Task<IActionResult> Delete(int id)
         {
             await _serviceProducto.DeleteAsync(id);
-            return RedirectToAction("Index");
+            TempData["Mensaje"] = Util.SweetAlertHelper.Mensaje(
+                "Eliminar Producto",
+                "Producto desactivado", Util.SweetAlertMessageType.success);
+            return RedirectToAction("IndexAdmin");
         }
         public async Task<IActionResult> GetProductoByName(string filtro)
         {

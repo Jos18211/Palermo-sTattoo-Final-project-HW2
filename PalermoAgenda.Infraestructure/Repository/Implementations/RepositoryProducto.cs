@@ -22,6 +22,18 @@ namespace PalermoAgenda.Infraestructure.Repository.Implementations
         {
             //Listar los productos incluyendo su categoría, ordenado de forma descendente
             var collection = await _context.Set<Producto>()
+                                .Where(x => x.Estado == true)
+                                .Include(x => x.IdCategoriaProductoNavigation)
+                                .OrderByDescending(x => x.IdProducto)
+                                .AsNoTracking()
+                                .ToListAsync();
+
+            return collection;
+        }
+        public async Task<ICollection<Producto>> ListAsyncAdmin()
+        {
+            //Listar los productos incluyendo su categoría, ordenado de forma descendente
+            var collection = await _context.Set<Producto>()
                                 .Include(x => x.IdCategoriaProductoNavigation)
                                 .OrderByDescending(x => x.IdProducto)
                                 .AsNoTracking()
@@ -56,7 +68,7 @@ namespace PalermoAgenda.Infraestructure.Repository.Implementations
         public async Task<ICollection<Producto>> FindByNameAsync(string nombre)
         {
             var collection = await _context.Set<Producto>()
-                               .Where(x => x.Nombre.Contains(nombre))
+                               .Where(x => x.Nombre.Contains(nombre) && x.Estado)
                                .Include(x => x.IdCategoriaProductoNavigation)
                                .OrderByDescending(x => x.IdProducto)
                                .AsNoTracking()
@@ -69,7 +81,7 @@ namespace PalermoAgenda.Infraestructure.Repository.Implementations
         public async Task<ICollection<Producto>> GetProductoByCategoria(int idCategoriaProducto)
         {
             var collection = await _context.Set<Producto>()
-                               .Where(x => x.IdCategoriaProducto == idCategoriaProducto)
+                               .Where(x => x.IdCategoriaProducto == idCategoriaProducto && x.Estado)
                                .Include(x => x.IdCategoriaProductoNavigation)
                                .OrderByDescending(x => x.IdProducto)
                                .AsNoTracking()
@@ -81,9 +93,13 @@ namespace PalermoAgenda.Infraestructure.Repository.Implementations
                            
         }
 
-        public Task DeleteAsync(int id)
+        public async Task DeleteAsync(int id)
         {
-            throw new NotImplementedException();
+            // Borrado lógico: no se elimina, se desactiva
+            var entity = await _context.Set<Producto>().FindAsync(id);
+            if (entity == null) return;
+            entity.Estado = false;
+            await _context.SaveChangesAsync();
         }
 
     }

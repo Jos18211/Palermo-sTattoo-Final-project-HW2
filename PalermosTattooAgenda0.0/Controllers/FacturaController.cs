@@ -117,7 +117,14 @@ namespace PalermosTattooAgenda0.Web.Controllers
             FacturaDetalleDTO detalle = new FacturaDetalleDTO();
             var lista = new List<FacturaDetalleDTO>();
             string json = "";
-            var Producto = await _serviceProducto.FindByIdAsync(id);
+            
+                var Producto = await _serviceProducto.FindByIdAsync(id);
+            
+            if (Producto == null || !Producto.Estado)
+                {
+                    TempData.Keep();
+                    return BadRequest("El producto no está disponible");
+                }
             FacturaDetalleDTO item = new FacturaDetalleDTO();
             //Cantidad de item a guardar
             detalle.Cantidad = cantidad;
