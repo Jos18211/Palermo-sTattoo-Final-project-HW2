@@ -20,8 +20,7 @@
 
             <div class="mb-3">
                 <label asp-for="Fecha" class="form-label"></label>
-                <input asp-for="Fecha" type="date" asp-format="{0:yyyy-MM-dd}" class="form-control"
-                       min="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                <input asp-for="Fecha" type="date" asp-format="{0:yyyy-MM-dd}" class="form-control" />
                 <span asp-validation-for="Fecha" class="text-danger"></span>
             </div>
 

@@ -8,6 +8,8 @@ using PalermoAgenda.Infraestructure.Repository.Implementations;
 using PalermoAgenda.Infraestructure.Repository.Interfaces;
 using PalermosTattooAgenda0.Web.Middleware;
 using PalermosTattooAgenda0.Web.Services;
+using PalermosTattooAgenda0.Web.Validations;
+using Microsoft.AspNetCore.Mvc.DataAnnotations;
 using Serilog;
 using Serilog.Events;
 using System.Globalization;
@@ -17,7 +19,10 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+// Mensajes de validación en español (atributos sin mensaje, requerido implícito y conversión de datos)
+builder.Services.AddControllersWithViews(options => MensajesValidacionEspanolProvider.Configurar(options));
+// Validación en el navegador del atributo CustomDateValidation
+builder.Services.AddSingleton<IValidationAttributeAdapterProvider, CustomValidationAttributeAdapterProvider>();
 //***********************
 // Configurar D.I.
 //Repository

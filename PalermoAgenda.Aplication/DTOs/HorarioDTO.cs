@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using PalermoAgenda.Application.Validations;
+using System.ComponentModel.DataAnnotations;
 
 namespace PalermoAgenda.Application.DTOs
 {
@@ -24,6 +25,7 @@ namespace PalermoAgenda.Application.DTOs
 
         [Display(Name = "Fecha")]
         [Required(ErrorMessage = "{0} es requerida")]
+        [CustomDateValidation(ErrorMessage = "El campo {0} debe ser una fecha mayor a la actual.")]
         public DateOnly Fecha { get; set; }
 
         // Solo para mostrar (listado y detalle)
