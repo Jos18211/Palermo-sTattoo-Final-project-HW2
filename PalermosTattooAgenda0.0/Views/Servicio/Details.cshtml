@@ -39,6 +39,10 @@
             </dd>
             <dt class="col-sm-4">Complejidad</dt>
             <dd class="col-sm-8">@Model.Complejidad</dd>
+            <dt class="col-sm-4">Estado</dt>
+            <dd class="col-sm-8">
+                <span class="badge @(Model.Estado ? "bg-success" : "bg-secondary")">@(Model.Estado ? "Activo" : "Inactivo")</span>
+            </dd>
             <dt class="col-sm-4">Artistas</dt>
             <dd class="col-sm-8">
                 @foreach (var a in Model.IdArtista)

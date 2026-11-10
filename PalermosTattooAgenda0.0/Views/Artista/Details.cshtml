@@ -69,6 +69,10 @@
                     <span class="text-muted">Sin encargados asignados</span>
                 }
             </dd>
+            <dt class="col-sm-4">Estado</dt>
+            <dd class="col-sm-8">
+                <span class="badge @(Model.Estado ? "bg-success" : "bg-secondary")">@(Model.Estado ? "Activo" : "Inactivo")</span>
+            </dd>
         </dl>
 
 

@@ -56,6 +56,16 @@
             <dd class="col-sm-8">
                 @Html.DisplayFor(model => model.Presentacion)
             </dd>
+            <dt class="col-sm-4">
+                @Html.DisplayNameFor(model => model.Stock)
+            </dt>
+            <dd class="col-sm-8">
+                @Model.Stock unidades
+            </dd>
+            <dt class="col-sm-4">Estado</dt>
+            <dd class="col-sm-8">
+                <span class="badge @(Model.Estado ? "bg-success" : "bg-secondary")">@(Model.Estado ? "Activo" : "Inactivo")</span>
+            </dd>
         </dl>
       
 
