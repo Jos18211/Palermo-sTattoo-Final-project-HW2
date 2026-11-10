@@ -1,0 +1,29 @@
+@model PalermoAgenda.Application.DTOs.HorarioDTO
+@{
+    ViewData["Title"] = "Detalle de horario";
+    string[] dias = { "", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo" };
+}
+
+<h1>Detalle de horario</h1>
+<hr />
+<dl class="row">
+    <dt class="col-sm-3">@Html.DisplayNameFor(m => m.NombreSucursal)</dt>
+    <dd class="col-sm-9">@Model.NombreSucursal</dd>
+
+    <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Fecha)</dt>
+    <dd class="col-sm-9">@Model.Fecha.ToString("dd/MM/yyyy")</dd>
+
+    <dt class="col-sm-3">@Html.DisplayNameFor(m => m.DiaSemana)</dt>
+    <dd class="col-sm-9">@(Model.DiaSemana is >= 1 and <= 7 ? dias[Model.DiaSemana] : "")</dd>
+
+    <dt class="col-sm-3">@Html.DisplayNameFor(m => m.HoraInicio)</dt>
+    <dd class="col-sm-9">@Model.HoraInicio.ToString("HH:mm")</dd>
+
+    <dt class="col-sm-3">@Html.DisplayNameFor(m => m.HoraFin)</dt>
+    <dd class="col-sm-9">@Model.HoraFin.ToString("HH:mm")</dd>
+
+    <dt class="col-sm-3">Duración</dt>
+    <dd class="col-sm-9">@((Model.HoraFin - Model.HoraInicio).TotalHours.ToString("0.#")) horas</dd>
+</dl>
+
+<a asp-action="Index" asp-route-idArtista="@Model.IdArtista" class="btn btn-secondary">Regresar</a>

@@ -1,0 +1,36 @@
+﻿@model IEnumerable<PalermoAgenda.Application.DTOs.ArtistaDTO>
+@foreach (var item in Model)
+{
+    <div class="col">
+        <div class="card h-100 tarjeta-hover">
+            @if (item.Imagen != null)
+            {
+
+                var b64 = Convert.ToBase64String(item.Imagen);
+                <img class="card-img-top img-producto"
+                     src="data:image/jpeg;base64,@b64"
+                     alt="@item.Nombre" />
+            }
+
+            <div class="card-body">
+                <h5 class="card-title">@item.Nombre</h5>
+                <p class="text-muted mb-1">@(item.Estado ? "Activo" : "Inactivo")</p>
+                <p class="mb-1">@item.Descripcion</p>
+
+
+            </div>
+            <div class="card-footer">
+                <span class="fw-bold text-primary">
+                    <p class="mb-1">@item.Telefono</p>
+                </span>
+            </div>
+            <div class="card-footer bg-transparent border-0">
+                <a class="btn btn-primary w-100" asp-action="Details"
+                   asp-route-id="@item.IdArtista">
+                    <i class="bi bi-zoom-in"></i> Detalle
+                </a>
+
+            </div>
+        </div>
+    </div>
+}

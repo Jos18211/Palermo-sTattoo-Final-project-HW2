@@ -1,0 +1,118 @@
+@using PalermoAgenda.Application.DTOs
+@{
+    ViewData["Title"] = "Horarios y bloqueos";
+    var horarios = (IEnumerable<HorarioDTO>)ViewBag.Horarios;
+    var bloqueos = (IEnumerable<BloqueoDTO>)ViewBag.Bloqueos;
+    int? idArtista = ViewBag.IdArtista;
+}
+
+<h1>Horarios y bloqueos por sucursal</h1>
+
+<form method="get" asp-action="Index" class="row g-2 align-items-end mb-4">
+    <div class="col-md-5">
+        <label for="idArtista" class="form-label">Sucursal</label>
+        <select id="idArtista" name="idArtista" asp-items="ViewBag.ListSucursales"
+                class="form-select" onchange="this.form.submit()">
+            <option value="">-- Seleccione una sucursal --</option>
+        </select>
+    </div>
+    @if (idArtista.HasValue)
+    {
+        <div class="col-md-7 d-flex gap-2">
+            <a class="btn btn-primary" asp-action="Create" asp-route-idArtista="@idArtista">
+                <i class="bi bi-calendar-plus"></i> Nuevo horario
+            </a>
+            <a class="btn btn-warning" asp-action="CreateBloqueo" asp-route-idArtista="@idArtista">
+                <i class="bi bi-calendar-x"></i> Nuevo bloqueo
+            </a>
+        </div>
+    }
+</form>
+
+@if (!idArtista.HasValue)
+{
+    <div class="alert alert-info">Seleccione una sucursal para ver sus horarios y bloqueos.</div>
+}
+else
+{
+    <div class="row g-4">
+        <div class="col-lg-6">
+            <h4><i class="bi bi-clock"></i> Horarios</h4>
+            @if (!horarios.Any())
+            {
+                <p class="text-muted">La sucursal no tiene horarios registrados.</p>
+            }
+            else
+            {
+                <table class="table table-bordered table-hover">
+                    <thead>
+                        <tr class="table-primary">
+                            <th>Fecha</th>
+                            <th>Horas</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var h in horarios)
+                        {
+                            <tr>
+                                <td>@h.Fecha.ToString("dddd dd/MM/yyyy")</td>
+                                <td>@h.HoraInicio.ToString("HH:mm") a @h.HoraFin.ToString("HH:mm")</td>
+                                <td>
+                                    <a asp-action="Details" asp-route-id="@h.IdHorario" class="btn btn-info btn-sm">
+                                        <i class="bi bi-zoom-in"></i> Detalle
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+
+        <div class="col-lg-6">
+            <h4><i class="bi bi-slash-circle"></i> Bloqueos</h4>
+            @if (!bloqueos.Any())
+            {
+                <p class="text-muted">La sucursal no tiene bloqueos registrados.</p>
+            }
+            else
+            {
+                <table class="table table-bordered table-hover">
+                    <thead>
+                        <tr class="table-warning">
+                            <th>Fecha</th>
+                            <th>Horas</th>
+                            <th>Motivo</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var b in bloqueos)
+                        {
+                            <tr>
+                                <td>@b.Fecha.ToString("dddd dd/MM/yyyy")</td>
+                                <td>
+                                    @if (b.TodoElDia)
+                                    {
+                                        <span class="badge bg-danger">Todo el día</span>
+                                    }
+                                    else
+                                    {
+                                        @($"{b.HoraInicio:HH\\:mm} a {b.HoraFin:HH\\:mm}")
+                                    }
+                                </td>
+                                <td>@b.Motivo</td>
+                                <td>
+                                    <a asp-action="DetailsBloqueo" asp-route-id="@b.IdBloqueo" class="btn btn-info btn-sm">
+                                        <i class="bi bi-zoom-in"></i> Detalle
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    </div>
+}

@@ -1,0 +1,104 @@
+﻿@model PalermoAgenda.Application.DTOs.ArtistaDTO
+
+@{
+    ViewData["Title"] = "Editar Artista";
+}
+
+<div class="row justify-content-center">
+    <div class="col-xl-10">
+        <div class="card card-detalle shadow-sm form-mant">
+            <div class="card-header">
+                <h4 class="mb-0"><i class="bi bi-pencil-square"></i> Editar artista</h4>
+            </div>
+            <div class="card-body">
+                <form asp-action="Edit" asp-antiforgery="true" enctype="multipart/form-data">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+                    <input type="hidden" asp-for="IdArtista" />
+
+                    <div class="row g-4">
+                        <!-- Datos -->
+                        <div class="col-lg-8">
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <label asp-for="Nombre" class="form-label"></label>
+                                    <input asp-for="Nombre" class="form-control" />
+                                    <span asp-validation-for="Nombre" class="text-danger small"></span>
+                                </div>
+                                <div class="col-12">
+                                    <label asp-for="Descripcion" class="form-label"></label>
+                                    <textarea asp-for="Descripcion" class="form-control" rows="3"></textarea>
+                                    <span asp-validation-for="Descripcion" class="text-danger small"></span>
+                                </div>
+                                <div class="col-md-5">
+                                    <label asp-for="Telefono" class="form-label"></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-telephone"></i></span>
+                                        <input asp-for="Telefono" class="form-control" placeholder="8888-8888" />
+                                    </div>
+                                    <span asp-validation-for="Telefono" class="text-danger small"></span>
+                                </div>
+                                <div class="col-md-7">
+                                    <label asp-for="Email" class="form-label"></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                                        <input asp-for="Email" class="form-control" />
+                                    </div>
+                                    <span asp-validation-for="Email" class="text-danger small"></span>
+                                </div>
+                                <div class="col-12">
+                                    <label asp-for="Direccion" class="form-label"></label>
+                                    <textarea asp-for="Direccion" class="form-control" rows="2"></textarea>
+                                    <span asp-validation-for="Direccion" class="text-danger small"></span>
+                                </div>
+                                <div class="col-12">
+                                    <label asp-for="SelectedEncargados" class="form-label"></label>
+                                    <select asp-for="SelectedEncargados" asp-items="ViewBag.ListEncargados" class="form-select" multiple size="4"></select>
+                                    <small class="text-muted">Mantenga Ctrl presionado para seleccionar varios.</small>
+                                    <span asp-validation-for="SelectedEncargados" class="text-danger small d-block"></span>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-check form-switch">
+                                        <input asp-for="Estado" class="form-check-input" role="switch" />
+                                        <label asp-for="Estado" class="form-check-label">Activo</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Imagen -->
+                        <div class="col-lg-4">
+                            <label for="imageFile" class="form-label">Imagen</label>
+                            <img id="preview" class="img-preview mb-2" alt="Vista previa"
+                                 src="@(Model.Imagen != null && Model.Imagen.Length > 0 ? "data:image/jpeg;base64," + Convert.ToBase64String(Model.Imagen) : Url.Content("~/images/nophoto.png"))" />
+                            <input type="file" id="imageFile" name="imageFile" class="form-control" accept="image/*" />
+                            <small class="text-muted">Si no selecciona otra imagen se conserva la actual.</small>
+                        </div>
+                    </div>
+
+                    <hr />
+                    <div class="d-flex justify-content-end gap-2">
+                        <a asp-action="IndexAdmin" class="btn btn-secondary">
+                            <i class="bi bi-arrow-return-left"></i> Regresar
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-lg"></i> Guardar cambios
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        // Vista previa de la imagen seleccionada
+        document.getElementById("imageFile").addEventListener("change", e => {
+            const f = e.target.files[0];
+            if (f) document.getElementById("preview").src = URL.createObjectURL(f);
+        });
+    </script>
+}

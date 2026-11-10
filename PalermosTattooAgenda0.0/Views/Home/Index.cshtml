@@ -81,8 +81,10 @@
               text-center">
     @foreach (var a in artistas.Where(x => x.Estado))
     {
-      var foto = Url.Content(
-        "~/images/artistas/" + a.Imagen);
+      // La foto se guarda en la BD (varbinary), igual que en Producto y Servicio
+      var foto = a.Imagen != null && a.Imagen.Length > 0
+        ? "data:image/jpeg;base64," + Convert.ToBase64String(a.Imagen)
+        : Url.Content("~/images/profile.png");
       <div class="col">
         <img class="foto-artista mb-3" src="@foto"
              alt="@a.Nombre"

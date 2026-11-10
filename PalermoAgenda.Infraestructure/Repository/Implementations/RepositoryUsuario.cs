@@ -75,5 +75,16 @@ namespace PalermoAgenda.Infraestructure.Repository.Implementations
         {
             await _context.SaveChangesAsync();
         }
+        public async Task<ICollection<Usuario>> ListEncargadosDisponiblesAsync(int? idArtista)
+        {
+            // Crear (idArtista = null): solo encargados sin sucu
+            // Modificar: los sin sucursal + los que ya tiene esta sucursal
+            return await _context.Set<Usuario>()
+                .Where(u => u.IdRol == 2 && u.Estado
+                         && (u.IdArtista == null || u.IdArtista == idArtista))
+                .OrderBy(u => u.Nombre)
+                .AsNoTracking()
+                .ToListAsync();
+        }
     }
 }

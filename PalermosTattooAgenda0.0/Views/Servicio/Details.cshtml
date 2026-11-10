@@ -49,8 +49,20 @@
                 }
             </dd>
         </dl>
-        <a class="btn btn-secondary" asp-action="Index">
-            <i class="bi bi-arrow-left"></i> Regresar
-        </a>
+        @{
+            // Se llega desde el mantenimiento (IndexAdmin) o desde el catálogo (Index)
+            bool desdeAdmin = Context.Request.Query["origen"] == "admin";
+        }
+        <div class="d-flex gap-2">
+            @if (desdeAdmin)
+            {
+                <a asp-action="Edit" asp-route-id="@Model.IdServicio" class="btn btn-secondary">
+                    <i class="bi bi-pencil-fill"></i> Editar
+                </a>
+            }
+            <a class="btn btn-secondary" asp-action="@(desdeAdmin ? "IndexAdmin" : "Index")">
+                <i class="bi bi-arrow-left"></i> @(desdeAdmin ? "Regresar al mantenimiento" : "Regresar al catálogo")
+            </a>
+        </div>
     </div>
 </div>

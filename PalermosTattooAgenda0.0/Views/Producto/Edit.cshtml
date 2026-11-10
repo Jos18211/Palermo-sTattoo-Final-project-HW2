@@ -4,87 +4,107 @@
     ViewData["Title"] = "Editar Producto";
 }
 
-<h1>Editar Producto </h1>
+<div class="row justify-content-center">
+    <div class="col-xl-10">
+        <div class="card card-detalle shadow-sm form-mant">
+            <div class="card-header">
+                <h4 class="mb-0"><i class="bi bi-pencil-square"></i> Editar producto</h4>
+            </div>
+            <div class="card-body">
+                <form asp-action="Edit" asp-antiforgery="true" enctype="multipart/form-data">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+                    <input type="hidden" asp-for="IdProducto" />
 
-<h4>Producto</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit" asp-antiforgery="true" enctype="multipart/form-data">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="row g-4">
+                        <!-- Datos -->
+                        <div class="col-lg-8">
+                            <div class="row g-3">
+                                <div class="col-md-7">
+                                    <label asp-for="Nombre" class="form-label"></label>
+                                    <input asp-for="Nombre" class="form-control" />
+                                    <span asp-validation-for="Nombre" class="text-danger small"></span>
+                                </div>
+                                <div class="col-md-5">
+                                    <label asp-for="IdCategoriaProducto" class="form-label"></label>
+                                    <select asp-for="IdCategoriaProducto" asp-items="ViewBag.ListCategorias" class="form-select">
+                                        <option value="">-- Seleccione una categoría --</option>
+                                    </select>
+                                    <span asp-validation-for="IdCategoriaProducto" class="text-danger small"></span>
+                                </div>
+                                <div class="col-12">
+                                    <label asp-for="Descripcion" class="form-label"></label>
+                                    <textarea asp-for="Descripcion" class="form-control" rows="3"></textarea>
+                                    <span asp-validation-for="Descripcion" class="text-danger small"></span>
+                                </div>
+                                <div class="col-md-6">
+                                    <label asp-for="Marca" class="form-label"></label>
+                                    <input asp-for="Marca" class="form-control" />
+                                    <span asp-validation-for="Marca" class="text-danger small"></span>
+                                </div>
+                                <div class="col-md-6">
+                                    <label asp-for="Presentacion" class="form-label"></label>
+                                    <input asp-for="Presentacion" class="form-control" />
+                                    <span asp-validation-for="Presentacion" class="text-danger small"></span>
+                                </div>
+                                <div class="col-md-6">
+                                    <label asp-for="Precio" class="form-label"></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">₡</span>
+                                        <input asp-for="Precio" class="form-control" />
+                                    </div>
+                                    <span asp-validation-for="Precio" class="text-danger small"></span>
+                                </div>
+                                <div class="col-md-6">
+                                    <label asp-for="Stock" class="form-label"></label>
+                                    <div class="input-group">
+                                        <input asp-for="Stock" class="form-control" />
+                                        <span class="input-group-text">unid.</span>
+                                    </div>
+                                    <span asp-validation-for="Stock" class="text-danger small"></span>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-check form-switch">
+                                        <input asp-for="Estado" class="form-check-input" role="switch" />
+                                        <label asp-for="Estado" class="form-check-label">Activo</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-            <input type="hidden" asp-for="IdProducto" />
+                        <!-- Imagen -->
+                        <div class="col-lg-4">
+                            <label for="imageFile" class="form-label">Imagen</label>
+                            <img id="preview" class="img-preview mb-2" alt="Vista previa"
+                                 src="@(Model.Imagen != null && Model.Imagen.Length > 0 ? "data:image/jpeg;base64," + Convert.ToBase64String(Model.Imagen) : Url.Content("~/images/nophoto.png"))" />
+                            <input type="file" id="imageFile" name="imageFile" class="form-control" accept="image/*" />
+                            <small class="text-muted">Si no selecciona otra imagen se conserva la actual.</small>
+                        </div>
+                    </div>
 
-            <div class="form-group">
-                <label asp-for="Nombre" class="control-label"></label>
-                <input asp-for="Nombre" class="form-control" />
-                <span asp-validation-for="Nombre" class="text-danger"></span>
+                    <hr />
+                    <div class="d-flex justify-content-end gap-2">
+                        <a asp-action="IndexAdmin" class="btn btn-secondary">
+                            <i class="bi bi-arrow-return-left"></i> Regresar
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-lg"></i> Guardar cambios
+                        </button>
+                    </div>
+                </form>
             </div>
-            <div class="form-group">
-                <label asp-for="Descripcion" class="control-label"></label>
-                <textarea asp-for="Descripcion" class="form-control" rows="3"></textarea>
-                <span asp-validation-for="Descripcion" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="IdCategoriaProducto" class="control-label"></label>
-                <select asp-for="IdCategoriaProducto" asp-items="ViewBag.ListCategorias" class="form-select">
-                    <option value="">-- Seleccione una categoría --</option>
-                </select>
-                <span asp-validation-for="IdCategoriaProducto" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Precio" class="control-label"></label>
-                <input asp-for="Precio" class="form-control" />
-                <span asp-validation-for="Precio" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Marca" class="control-label"></label>
-                <input asp-for="Marca" class="form-control" />
-                <span asp-validation-for="Marca" class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
-                <label asp-for="Presentacion" class="control-label"></label>
-                <input asp-for="Presentacion" class="form-control" />
-                <span asp-validation-for="Presentacion" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Estado" class="control-label"></label>
-                <input asp-for="Estado" class="form-check-input" />
-                <span asp-validation-for="Estado" class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
-                <label asp-for="Stock" class="control-label"></label>
-                <input asp-for="Stock" class="form-control" />
-                <span asp-validation-for="Stock" class="text-danger"></span>
-            </div>
-
-
-            <div class="form-group">
-                @if (Model.Imagen != null)
-                {
-                    <img src="data:image/jpeg;base64,@Convert.ToBase64String(Model.Imagen)"
-                         class="img-thumbnail mb-2" style="max-height:150px" />
-                }
-                <input type="file" id="imageFile" name="imageFile" class="form-control" />
-                <span asp-validation-for="Imagen" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Editar" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
-</div>
-
-<div>
-    <a asp-action="IndexAdmin">Regresar</a>
 </div>
 
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
-
+    <script>
+        // Vista previa de la imagen seleccionada
+        document.getElementById("imageFile").addEventListener("change", e => {
+            const f = e.target.files[0];
+            if (f) document.getElementById("preview").src = URL.createObjectURL(f);
+        });
+    </script>
 }
-

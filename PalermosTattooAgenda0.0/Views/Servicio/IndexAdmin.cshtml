@@ -26,16 +26,13 @@
             <th>
                 @Html.DisplayNameFor(model => model.Precio)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Estado)
-            </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
         @foreach (var item in Model)
         {
-            <tr>
+            <tr class="@(item.Estado ? "" : "fila-inactiva")">
                 <td>
                     @Html.DisplayFor(modelItem => item.IdServicio)
                 </td>
@@ -50,14 +47,11 @@
                     @Html.DisplayFor(modelItem => item.Precio)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Estado)
-                </td>
-                <td>
-                    <div class="btn-group" role="group" aria-label="Acciones">
+                    <div class="d-flex flex-wrap gap-1" role="group" aria-label="Acciones">
                         <a href="@Url.Action("Edit", new { id = item.IdServicio })" class="btn btn-secondary">
                             <i class="bi bi-pencil-fill"></i> Editar
                         </a>
-                        <a href="@Url.Action("Details", new { id = item.IdServicio })" class="btn btn-info">
+                        <a href="@Url.Action("Details", new { id = item.IdServicio, origen = "admin" })" class="btn btn-info">
                             <i class="bi bi-zoom-in"></i> Detalle
                         </a>
                         @if (item.Estado)
@@ -70,7 +64,9 @@
                         }
                         else
                         {
-                            <span class="badge bg-secondary align-self-center ms-2">Inactivo</span>
+                            <button type="button" class="btn btn-secondary" disabled title="Puede reactivarlo desde Editar">
+                                <i class="bi bi-slash-circle"></i> Inactivo
+                            </button>
                         }
                     </div>
                 </td>

@@ -1,0 +1,11 @@
+# Configuración del editor para toda la solución
+root = true
+
+# Código y vistas: guardar siempre en UTF-8 (con BOM) para que las tildes
+# y la ñ se muestren bien. Evita que Visual Studio guarde en ISO-8859.
+[*.{cs,cshtml,razor}]
+charset = utf-8-bom
+
+# Otros archivos de texto del proyecto
+[*.{json,js,css,html}]
+charset = utf-8

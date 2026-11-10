@@ -17,7 +17,7 @@ public partial class Artista
 
     public string Email { get; set; } = null!;
 
-    public string? Imagen { get; set; }
+    public byte[]? Imagen { get; set; }
 
     public bool Estado { get; set; }
 

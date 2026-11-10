@@ -13,5 +13,11 @@ namespace PalermoAgenda.Application.Services.Interfaces
     {
         Task<ICollection<ArtistaDTO>> ListAsync();
         Task<ArtistaDTO> FindByIdAsync(int id);
+        Task<ICollection<ArtistaDTO>> FindByNameAsync(string nombre);
+        Task<ICollection<ArtistaDTO>> ListAsyncAdmin();
+        Task<int> AddAsync(ArtistaDTO entity);
+        Task DeleteAsync(int id);
+        Task UpdateAsync(int id,ArtistaDTO entity);
+        Task<bool> ExisteEmailAsync(string email, int idExcluir);
     }
 }

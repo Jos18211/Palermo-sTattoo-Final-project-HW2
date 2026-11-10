@@ -54,9 +54,6 @@ public partial class PalermosTattooContext : DbContext
                 .HasMaxLength(100)
                 .IsUnicode(false);
             entity.Property(e => e.Estado).HasDefaultValue(true);
-            entity.Property(e => e.Imagen)
-                .HasMaxLength(250)
-                .IsUnicode(false);
             entity.Property(e => e.Nombre)
                 .HasMaxLength(100)
                 .IsUnicode(false);

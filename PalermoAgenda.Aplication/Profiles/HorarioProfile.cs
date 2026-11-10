@@ -8,7 +8,11 @@ namespace PalermoAgenda.Application.Profiles
     {
         public HorarioProfile()
         {
-            CreateMap<HorarioDTO, Horario>().ReverseMap();
+            CreateMap<Horario, HorarioDTO>()
+                .ForMember(d => d.NombreSucursal,
+                           o => o.MapFrom(s => s.IdArtistaNavigation != null ? s.IdArtistaNavigation.Nombre : null));
+            CreateMap<HorarioDTO, Horario>()
+                .ForMember(d => d.IdArtistaNavigation, o => o.Ignore());
         }
     }
 }

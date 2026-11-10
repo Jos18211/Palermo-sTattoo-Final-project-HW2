@@ -14,7 +14,15 @@ namespace PalermoAgenda.Application.Profiles
     {
         public ArtistaProfile()
         {
-            CreateMap<ArtistaDTO, Artista>().ReverseMap();
+            CreateMap<Artista, ArtistaDTO>()
+                .ForMember(d => d.SelectedEncargados, o => o.Ignore());
+            CreateMap<ArtistaDTO, Artista>()
+                .ForMember(d => d.Usuario, o => o.Ignore())
+                .ForMember(d => d.Cita, o => o.Ignore())
+                .ForMember(d => d.Factura, o => o.Ignore())
+                .ForMember(d => d.Horario, o => o.Ignore())
+                .ForMember(d => d.Bloqueo, o => o.Ignore())
+                .ForMember(d => d.IdServicio, o => o.Ignore());
         }
     }
 }

@@ -1,0 +1,31 @@
+@model PalermoAgenda.Application.DTOs.BloqueoDTO
+@{
+    ViewData["Title"] = "Detalle de bloqueo";
+}
+
+<h1>Detalle de bloqueo</h1>
+<hr />
+<dl class="row">
+    <dt class="col-sm-3">@Html.DisplayNameFor(m => m.NombreSucursal)</dt>
+    <dd class="col-sm-9">@Model.NombreSucursal</dd>
+
+    <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Fecha)</dt>
+    <dd class="col-sm-9">@Model.Fecha.ToString("dddd dd/MM/yyyy")</dd>
+
+    <dt class="col-sm-3">@Html.DisplayNameFor(m => m.TodoElDia)</dt>
+    <dd class="col-sm-9">@(Model.TodoElDia ? "Sí" : "No")</dd>
+
+    @if (!Model.TodoElDia)
+    {
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.HoraInicio)</dt>
+        <dd class="col-sm-9">@Model.HoraInicio?.ToString("HH:mm")</dd>
+
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.HoraFin)</dt>
+        <dd class="col-sm-9">@Model.HoraFin?.ToString("HH:mm")</dd>
+    }
+
+    <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Motivo)</dt>
+    <dd class="col-sm-9">@Model.Motivo</dd>
+</dl>
+
+<a asp-action="Index" asp-route-idArtista="@Model.IdArtista" class="btn btn-secondary">Regresar</a>

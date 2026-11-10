@@ -13,5 +13,6 @@ namespace PalermoAgenda.Application.Services.Interfaces
         Task<ICollection<UsuarioDTO>> ListAsync();
         Task<UsuarioDTO> FindByIdAsync(int id);
         Task<ICollection<UsuarioDTO>> FindByNombreRolAsync(string nombre);
+        Task<ICollection<UsuarioDTO>> ListEncargadosDisponiblesAsync(int? idArtista);
     }
 }

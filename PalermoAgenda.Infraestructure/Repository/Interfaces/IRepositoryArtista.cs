@@ -1,4 +1,4 @@
-
+﻿
 using PalermoAgenda.Infraestructure.Models;
 using System;
 using System.Collections.Generic;
@@ -12,5 +12,13 @@ namespace PalermoAgenda.Infraestructure.Repository.Interfaces
     {
         Task<ICollection<Artista>> ListAsync();
         Task<Artista> FindByIdAsync(int id);
+        Task<ICollection<Artista>> FindByNameAsync(string nombre);
+        Task<ICollection<Artista>> ListAsyncAdmin();
+        Task<int> AddAsync(Artista entity, int[] encargados);
+        Task DeleteAsync(int id);
+        Task UpdateAsync(Artista entity,int[] encargados);
+        Task<bool> ExisteEmailAsync(string email, int idExcluir);
+      
+
     }
 }

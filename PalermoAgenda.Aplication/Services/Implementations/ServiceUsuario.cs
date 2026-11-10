@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using PalermoAgenda.Application.DTOs;
 using PalermoAgenda.Application.Services.Interfaces;
 using PalermoAgenda.Infraestructure.Models;
@@ -40,6 +41,16 @@ namespace PalermoAgenda.Application.Services.Implementations
             //Map List<Artista> a ICollection<ArtistaDTO>
             var collection = _mapper.Map<ICollection<UsuarioDTO>>(list);
             // Return lista
+            return collection;
+        }
+
+        public async Task<ICollection<UsuarioDTO>> ListEncargadosDisponiblesAsync(int? idArtista)
+        {
+            // Crear (idArtista = null): solo encargados sin sucursal
+            // Modificar: los sin sucursal + los que ya tiene esta sucursal
+            var list = await _repository.ListEncargadosDisponiblesAsync(idArtista);
+            var collection = _mapper.Map<ICollection<UsuarioDTO>>(list);
+
             return collection;
         }
     }

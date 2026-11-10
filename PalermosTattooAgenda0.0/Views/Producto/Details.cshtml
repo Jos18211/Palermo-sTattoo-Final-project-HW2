@@ -62,12 +62,19 @@
     </div>
 </div>
 
-<div class="btn-group" role="group" aria-label="Acciones">
-    <a href="@Url.Action("Edit", new { id = Model.IdProducto })" class="btn btn-secondary">
-        <i class="bi bi-pencil-fill"></i> Editar
-    </a>
-    <a asp-action="Index" class="btn btn-info">
+@{
+    // Se llega desde el mantenimiento (IndexAdmin) o desde el catálogo (Index)
+    bool desdeAdmin = Context.Request.Query["origen"] == "admin";
+}
+<div class="d-flex gap-2" role="group" aria-label="Acciones">
+    @if (desdeAdmin)
+    {
+        <a href="@Url.Action("Edit", new { id = Model.IdProducto })" class="btn btn-secondary">
+            <i class="bi bi-pencil-fill"></i> Editar
+        </a>
+    }
+    <a asp-action="@(desdeAdmin ? "IndexAdmin" : "Index")" class="btn btn-info">
         <i class="bi bi-arrow-return-left"></i>
-        Regresar al listado
+        @(desdeAdmin ? "Regresar al mantenimiento" : "Regresar al catálogo")
     </a>
 </div>

@@ -16,4 +16,5 @@ public interface IRepositoryUsuario
     Task<int> AddAsync(Usuario entity);
     Task DeleteAsync(int id);
     Task UpdateAsync();
+    Task<ICollection<Usuario>> ListEncargadosDisponiblesAsync(int? idArtista);
 }
