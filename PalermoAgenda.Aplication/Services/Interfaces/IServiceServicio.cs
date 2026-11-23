@@ -18,6 +18,7 @@ namespace PalermoAgenda.Application.Services.Interfaces
         Task DeleteAsync(int id);
         Task UpdateAsync(int id, ServicioDTO dto);
         Task<ICollection<ServicioDTO>> GetServicioByEstilo(string estilo);
+        Task<ICollection<ServicioDTO>> ListByArtistaAsync(int idArtista);
 
     }
 }

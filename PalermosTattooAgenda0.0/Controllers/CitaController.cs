@@ -2,19 +2,35 @@
 using Microsoft.AspNetCore.Mvc;
 using PalermoAgenda.Application.Services.Implementations;
 using PalermoAgenda.Application.Services.Interfaces;
+using PalermoAgenda.Application.DTOs;
+using PalermosTattooAgenda0.Web.Util;
 
 namespace PalermosTattooAgenda0.Web.Controllers
 {
     public class CitaController : Controller
     {
         private readonly IServiceCita _serviceCita;
+        private readonly IServiceUsuario _serviceUsuario;
+        private readonly IServiceArtista _serviceArtista;
+        private readonly IServiceServicio _serviceServicio;
+        private readonly IServiceHorario _serviceHorario;
+        private readonly IServiceBloqueo _serviceBloqueo;
         private const int IdEncargado = 2;
-        public CitaController(IServiceCita serviceCita)
+        public CitaController(IServiceCita serviceCita, IServiceUsuario serviceUsuario,
+                              IServiceArtista serviceArtista, IServiceServicio serviceServicio,
+                              IServiceHorario serviceHorario, IServiceBloqueo serviceBloqueo)
         {
             _serviceCita = serviceCita;
+            _serviceUsuario = serviceUsuario;
+            _serviceArtista = serviceArtista;
+            _serviceServicio = serviceServicio;
+            _serviceHorario = serviceHorario;
+            _serviceBloqueo = serviceBloqueo;
         }
         public async Task<ActionResult> Index()
         {
+            if (TempData.ContainsKey("Mensaje"))
+                ViewBag.NotificationMessage = TempData["Mensaje"];
             var collection = await _serviceCita.ListByEncargadoAsync(IdEncargado);
             return View(collection);
         }
@@ -37,6 +53,76 @@ namespace PalermosTattooAgenda0.Web.Controllers
             {
                 throw new Exception(ex.Message);
             }
+        }
+
+        // Datos que el formulario muestra pero no se editan: sucursal, servicios, horarios y bloqueos
+        private async Task CargarDatos(CitaDTO dto)
+        {
+            var sucursal = await _serviceArtista.FindByIdAsync(dto.IdArtista);
+            ViewBag.NombreSucursal = sucursal?.Nombre;
+            ViewBag.Servicios = await _serviceServicio.ListByArtistaAsync(dto.IdArtista);
+            var hoy = DateOnly.FromDateTime(DateTime.Today);
+            ViewBag.Horarios = (await _serviceHorario.ListByArtistaAsync(dto.IdArtista))
+                                .Where(h => h.Fecha >= hoy).OrderBy(h => h.Fecha).ThenBy(h => h.HoraInicio).ToList();
+            ViewBag.Bloqueos = (await _serviceBloqueo.ListByArtistaAsync(dto.IdArtista))
+                                .Where(b => b.Fecha >= hoy).OrderBy(b => b.Fecha).ToList();
+            // Si ya se había escogido un cliente (al volver con errores), se vuelve a mostrar
+            if (dto.IdCliente > 0)
+            {
+                var cliente = await _serviceUsuario.FindByIdAsync(dto.IdCliente);
+                ViewBag.ClienteNombre = cliente?.Nombre;
+                ViewBag.ClienteEmail = cliente?.Email;
+            }
+        }
+
+        // GET: Cita/Create
+        public async Task<IActionResult> Create()
+        {
+            // La sucursal es la del encargado, no se selecciona
+            var encargado = await _serviceUsuario.FindByIdAsync(IdEncargado);
+            var dto = new CitaDTO
+            {
+                IdArtista = encargado.IdArtista ?? 0,
+                Fecha = DateOnly.FromDateTime(DateTime.Today.AddDays(1)),
+                HoraInicio = new TimeOnly(10, 0)
+            };
+            await CargarDatos(dto);
+            return View(dto);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(CitaDTO dto)
+        {
+            // La sucursal siempre es la del encargado, no la que venga del formulario
+            var encargado = await _serviceUsuario.FindByIdAsync(IdEncargado);
+            dto.IdArtista = encargado.IdArtista ?? 0;
+
+            // IdCliente exist? (si viene en 0 ya lo valida el [Range] del DTO)
+            if (dto.IdCliente > 0 && await _serviceUsuario.FindByIdAsync(dto.IdCliente) == null)
+                ModelState.AddModelError(string.Empty, "Cliente No existe");
+
+            // Reglas de negocio: horario, bloqueos y sobreposición (capa de servicio)
+            if (ModelState.IsValid)
+            {
+                var error = await _serviceCita.ValidarAsync(dto);
+                if (error != null) ModelState.AddModelError(string.Empty, error);
+            }
+
+            if (!ModelState.IsValid)
+            {
+                string errors = string.Join("; ", ModelState.Values
+                                   .SelectMany(x => x.Errors)
+                                   .Select(x => x.ErrorMessage));
+                ViewBag.NotificationMessage = SweetAlertHelper.Mensaje("Reserva", errors, SweetAlertMessageType.error);
+                await CargarDatos(dto);
+                return View(dto);
+            }
+
+            var idCita = await _serviceCita.AddAsync(dto);
+            TempData["Mensaje"] = SweetAlertHelper.Mensaje("Registrar reserva",
+                $"Reserva #{idCita} registrada. Se generó su factura proforma.", SweetAlertMessageType.success);
+            return RedirectToAction(nameof(Index));
         }
     }
 }

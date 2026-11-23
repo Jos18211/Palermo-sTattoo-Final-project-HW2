@@ -74,6 +74,13 @@ namespace PalermoAgenda.Application.Services.Implementations
         }
 
 
+        public async Task<ICollection<ServicioDTO>> ListByArtistaAsync(int idArtista)
+        {
+            // Servicios activos que ofrece la sucursal (para registrar una cita)
+            var list = await _repository.ListByArtistaAsync(idArtista);
+            return _mapper.Map<ICollection<ServicioDTO>>(list);
+        }
+
         public async Task<ICollection<ServicioDTO>> GetServicioByEstilo(string estilo)
         {
             // Get data from Repository

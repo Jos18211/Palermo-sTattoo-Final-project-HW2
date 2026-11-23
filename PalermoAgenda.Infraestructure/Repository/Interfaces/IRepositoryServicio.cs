@@ -19,6 +19,7 @@ namespace PalermoAgenda.Infraestructure.Repository.Interfaces
         Task DeleteAsync(int id);
         Task UpdateAsync(Servicio entity);
         Task<ICollection<Servicio>> GetServicioByEstilo(string estilo);
+        Task<ICollection<Servicio>> ListByArtistaAsync(int idArtista);
 
     }
 }

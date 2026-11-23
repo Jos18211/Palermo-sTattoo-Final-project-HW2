@@ -94,6 +94,18 @@ namespace PalermoAgenda.Infraestructure.Repository.Implementations
             await _context.SaveChangesAsync();
         }
 
+        public async Task<ICollection<Servicio>> ListByArtistaAsync(int idArtista)
+        {
+            // Servicios activos que ofrece una sucursal (tabla ArtistaServicio)
+            var collection = await _context.Set<Servicio>()
+                .Where(x => x.Estado && x.IdArtista.Any(a => a.IdArtista == idArtista))
+                .OrderBy(x => x.Nombre)
+                .AsNoTracking()
+                .ToListAsync();
+
+            return collection;
+        }
+
     }
 }
 
