@@ -99,5 +99,56 @@ namespace PalermoAgenda.Infraestructure.Repository.Implementations
 
         }
 
+        public async Task<ICollection<Factura>> ListByEncargadoAsync(int idEncargado)
+        {
+            // Solo las facturas de la sucursal a la que pertenece el encargado
+            var collection = await _context.Set<Factura>()
+                                            .Include(x => x.IdClienteNavigation)
+                                            .Where(x => x.IdArtistaNavigation.Usuario.Any(u => u.IdUsuario == idEncargado))
+                                            .OrderByDescending(x => x.FechaFactura)
+                                            .ThenByDescending(x => x.IdFactura)
+                                            .AsNoTracking()
+                                            .ToListAsync();
+            return collection;
+        }
+
+        public async Task FacturarProformaAsync(Factura entity)
+        {
+            // Se actualiza la MISMA fila de la proforma: UX_Factura_Cita no permite otra factura para la cita
+            var factura = await _context.Set<Factura>()
+                                        .Include(x => x.FacturaDetalle)
+                                        .Where(x => x.IdFactura == entity.IdFactura).FirstOrDefaultAsync();
+            if (factura == null || factura.Estado != "Proforma")
+                throw new Exception("La proforma no existe o ya fue facturada");
+
+            // 1. Descontar stock de cada producto del detalle
+            foreach (var detalle in entity.FacturaDetalle.Where(d => d.IdProducto != null))
+            {
+                var producto = await _context.Set<Producto>().FindAsync(detalle.IdProducto);
+                if (producto == null)
+                    throw new Exception($"Producto {detalle.IdProducto} no existe");
+                if (producto.Stock < detalle.Cantidad)
+                    throw new Exception($"Stock insuficiente para {producto.Nombre}");
+                producto.Stock -= detalle.Cantidad;
+            }
+            // 2. Reemplazar el detalle de la proforma por el que quedó en pantalla
+            _context.Set<FacturaDetalle>().RemoveRange(factura.FacturaDetalle.ToList());
+            foreach (var detalle in entity.FacturaDetalle)
+            {
+                detalle.IdFacturaDetalle = 0;
+                detalle.IdFactura = factura.IdFactura;
+                await _context.Set<FacturaDetalle>().AddAsync(detalle);
+            }
+            // 3. Encabezado: pasa a Firme con los nuevos totales
+            factura.Estado = "Firme";
+            factura.FechaFactura = entity.FechaFactura;
+            factura.Subtotal = entity.Subtotal;
+            factura.PorcentajeImpuesto = entity.PorcentajeImpuesto;
+            factura.MontoImpuesto = entity.MontoImpuesto;
+            factura.Total = entity.Total;
+            // 4. Un solo SaveChanges: todo se guarda o nada
+            await _context.SaveChangesAsync();
+        }
+
     }
 }

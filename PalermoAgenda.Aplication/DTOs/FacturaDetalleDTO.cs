@@ -22,6 +22,9 @@ namespace PalermoAgenda.Application.DTOs
         [Display(Name = "Servicio")]
         public int? IdServicio { get; set; }
 
+        [Display(Name = "Servicio")]
+        public string? NombreServicio { get; set; }
+
         [Display(Name = "Cantidad")]
         public int Cantidad { get; set; }
 
@@ -33,7 +36,9 @@ namespace PalermoAgenda.Application.DTOs
         [Display(Name = "Subtotal")]
         public decimal Subtotal { get; set; }
 
-      
+        // Impuesto de la línea (13 %); se calcula, no se guarda en FacturaDetalle
+        [Display(Name = "Impuesto")]
+        public decimal Impuesto => Math.Round(Subtotal * 13 / 100, 2);
 
         public virtual ProductoDTO? IdProductoNavigation { get; set; }
         public virtual ServicioDTO? IdServicioNavigation { get; set; }

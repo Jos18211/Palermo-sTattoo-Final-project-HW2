@@ -16,5 +16,7 @@ namespace PalermoAgenda.Application.Services.Interfaces
         Task<FacturaDTO> FindByIdChangeAsync(int id);
         Task<int> AddAsync(FacturaDTO dto);
         Task<int> GetNextNumberFactura();
+        Task<ICollection<FacturaDTO>> ListByEncargadoAsync(int idEncargado);
+        Task FacturarProformaAsync(FacturaDTO dto);
     }
 }

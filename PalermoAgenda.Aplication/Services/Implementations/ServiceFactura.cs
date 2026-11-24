@@ -55,5 +55,18 @@ namespace PalermoAgenda.Application.Services.Implementations
             return collection;
         }
 
+        public async Task<ICollection<FacturaDTO>> ListByEncargadoAsync(int idEncargado)
+        {
+            var list = await _repositoryFactura.ListByEncargadoAsync(idEncargado);
+            var collection = _mapper.Map<ICollection<FacturaDTO>>(list);
+            return collection;
+        }
+
+        public async Task FacturarProformaAsync(FacturaDTO dto)
+        {
+            var @object = _mapper.Map<Factura>(dto);
+            await _repositoryFactura.FacturarProformaAsync(@object);
+        }
+
     }
 }

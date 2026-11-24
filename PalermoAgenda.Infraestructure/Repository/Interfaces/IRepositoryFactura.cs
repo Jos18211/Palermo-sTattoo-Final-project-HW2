@@ -16,5 +16,7 @@ namespace PalermoAgenda.Infraestructure.Repository.Interfaces
         Task<int> AddAsync(Factura entity);
         Task<int> GetNextNumberFactura();
         Task<ICollection<Factura>> FacturaByClientId(int id);
+        Task<ICollection<Factura>> ListByEncargadoAsync(int idEncargado);
+        Task FacturarProformaAsync(Factura entity);
     }
 }
