@@ -3,6 +3,8 @@
 @model PalermoAgenda.Application.DTOs.FacturaDTO
 @{
     ViewData["Title"] = "Factura";
+    // true cuando se está facturando una proforma (acción Facturar)
+    bool esProforma = ViewBag.Proforma == true;
 }
 <style>
     ul.ui-autocomplete {
@@ -16,10 +18,21 @@
       data-ajax-failure="onFailure"
       data-ajax-success="onSuccess"
       data-ajax-complete="onComplete">
+    @if (esProforma)
+    {
+        <input type="hidden" name="idProforma" value="@Model.IdFactura" />
+    }
     <div class="card">
         <div class="card-header">
             <div class="col">
-                <button class="btn btn-info" style="margin-left: 1em" type="button" onclick="onClearForm()">Nueva Factura</button>
+                @if (esProforma)
+                {
+                    <span class="badge bg-warning text-dark fs-6">Facturar proforma #@Model.IdFactura</span>
+                }
+                else
+                {
+                    <button class="btn btn-info" style="margin-left: 1em" type="button" onclick="onClearForm()">Nueva Factura</button>
+                }
             </div>
         </div>
         <div class="card-body">
@@ -39,16 +52,29 @@
                         </div>
                         <div class="form-group">
                             <label asp-for="IdCliente" class="control-label"></label>
-                            <input id="ClienteBuscar" type="text" autocomplete="off" class="form-control form-control-sm" placeholder="Nombre del cliente" />
+                            @if (esProforma)
+                            {
+                                <!-- En la proforma el cliente es el de la cita, no se cambia -->
+                                <input class="form-control form-control-sm" value="@Model.IdClienteNavigation.Nombre" readonly />
+                            }
+                            else
+                            {
+                                <input id="ClienteBuscar" type="text" autocomplete="off" class="form-control form-control-sm" placeholder="Nombre del cliente" />
+                            }
                             <input asp-for="IdCliente" type="hidden" />
                             <span asp-validation-for="IdCliente" class="text-danger"></span>
+                            <!-- Datos del cliente seleccionado -->
+                            <small id="ClienteNombre" class="d-block">@(esProforma ? Model.IdClienteNavigation.Nombre : "")</small>
+                            <small id="ClienteEmail" class="d-block text-muted">@(esProforma ? Model.IdClienteNavigation.Email : "")</small>
                         </div>
                         <div class="form-group">
-                            <label asp-for="IdArtista" class="control-label"></label>
-                            <select asp-for="IdArtista" asp-items="ViewBag.ListArtistas" class="form-select form-select-sm">
-                                <option value="">-- Sucursal --</option>
-                            </select>
-                            <span asp-validation-for="IdArtista" class="text-danger"></span>
+                            <label class="control-label">Sucursal</label>
+                            <input class="form-control form-control-sm" value="@ViewBag.NombreSucursal" readonly />
+                            <input asp-for="IdArtista" type="hidden" />
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">Encargado</label>
+                            <input class="form-control form-control-sm" value="@ViewBag.NombreEncargado" readonly />
                         </div>
                         <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#myModal" onclick="">Agregar Producto / Servicio</button>
                     </div>
@@ -56,7 +82,7 @@
                         <!-- Detail View -->
                         <div id="detalleFacturaView">
                             <!-- Solamente se muestra la primera vez como efecto visual-->
-                            @await Html.PartialAsync("_DetailFactura")
+                            @await Html.PartialAsync("_DetailFactura", Model?.FacturaDetalle ?? new List<FacturaDetalleDTO>())
                         </div>
                     </div>
                 </div>
@@ -79,13 +105,13 @@
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="exampleModalLabel">Productos</h1>
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Productos / Servicios</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <!-- Etiqueta mostrar donde se inyecta el partialview-->
                 <div id="mostrar" class=""></div>
-                @await Html.PartialAsync("_AddProducto")
+                @await Html.PartialAsync("_AddProducto", new PalermosTattooAgenda0.Web.ViewModels.ViewModelInput())
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
@@ -126,7 +152,7 @@
                         // xhr.requestText
                         // debugger;
                         console.log(error)
-                        alert("Error: " + error + ", No Error: " + xhr.status);
+                        Swal.fire({ title: "Error", text: "Error: " + error + ", No Error: " + xhr.status, icon: "error" });
                     },
                 });
             },
@@ -136,7 +162,7 @@
                 $("#IdProductoModal").val(ui.item.data.idProducto);
                 $("#ProductoBuscar").val(ui.item.data.nombre)
                 $("#ProductoSelect").html("Producto: " + ui.item.data.nombre)
-                $("#PrecioSelect").html("Precio: " + ui.item.data.precio)
+                $("#PrecioSelect").html("Precio: ₡" + ui.item.data.precio)
                 $("#CantidadSelect").html("Cantidad stock: " + ui.item.data.stock)
                 $("#Precio").val(ui.item.data.precio)
                 $("#CantidadModal").focus();
@@ -160,18 +186,21 @@
                     success: function (data) {
                         response($.map(data, function (item) {
                             console.log(item);
-                            return { label: item.nombre + " (" + item.identificacion + ")", value: item.idUsuario };
+                            return { label: item.nombre + " (" + item.identificacion + ")", value: item.idUsuario, data: item };
                         }));
                     },
                     error: function (xhr, status, error) {
                         console.log(error)
-                        alert("Error: " + error + ", No Error: " + xhr.status);
+                        Swal.fire({ title: "Error", text: "Error: " + error + ", No Error: " + xhr.status, icon: "error" });
                     },
                 });
             },
             select: function (event, ui) {
                 $("#IdCliente").val(ui.item.value);
                 $("#ClienteBuscar").val(ui.item.label)
+                // Mostrar nombre completo y email del cliente
+                $("#ClienteNombre").text(ui.item.data.nombre);
+                $("#ClienteEmail").text(ui.item.data.email);
                
                 return false;
             }
@@ -182,6 +211,8 @@
         $("#ClienteBuscar").focus(function () {
             $("#ClienteBuscar").val("");
             $("#IdCliente").val("");
+            $("#ClienteNombre").text("");
+            $("#ClienteEmail").text("");
         });
         /**************************/
         // Agregar a la compra
@@ -283,6 +314,63 @@
                     })
                 })
         }
+        /**************************/
+        // Servicios: agregar, eliminar y mostrar la tarifa
+        /**************************/
+        function selectServicio() {
+            let precio = $("#IdServicioModal option:selected").data("precio");
+            $("#PrecioServicioSelect").html(precio ? "Tarifa: ₡" + precio : "Tarifa: -");
+        }
+        function addServicio() {
+            let idServicio = $("#IdServicioModal").val();
+            let cantidad = $("#CantidadServicioModal").val();
+            if (idServicio == "") {
+                Swal.fire({ title: "Error!", text: "Seleccione un servicio!", icon: "error" });
+                return;
+            }
+            if (!/^\d+$/.test(cantidad) || parseInt(cantidad) <= 0) {
+                Swal.fire({ title: "Error!", text: "La cantidad debe ser un número mayor a CERO!", icon: "error" });
+                return;
+            }
+            actualizarDetalle('@Url.Action("AddServicio", "Factura")' + "?id=" + idServicio + "&cantidad=" + cantidad);
+            $("#IdServicioModal").val("");
+            $("#CantidadServicioModal").val(1);
+            $("#PrecioServicioSelect").html("Tarifa: -");
+        }
+        function deleteServicio(id) {
+            actualizarDetalle('@Url.Action("DeleteServicio", "Factura")' + "?idServicio=" + id);
+        }
+        /**************************/
+        // Cambiar la cantidad de una línea (en 0 se elimina)
+        /**************************/
+        function cambiarCantidad(input, idProducto, idServicio, anterior) {
+            let cantidad = input.value;
+            // Solo se aceptan números enteros
+            if (!/^\d+$/.test(cantidad)) {
+                input.value = anterior;
+                Swal.fire({ title: "Error!", text: "La cantidad debe ser un número entero!", icon: "error" });
+                return;
+            }
+            let url = '@Url.Action("CambiarCantidad", "Factura")' + "?cantidad=" + cantidad;
+            url += idProducto != null ? "&idProducto=" + idProducto : "&idServicio=" + idServicio;
+            actualizarDetalle(url, function () { input.value = anterior; });
+        }
+        // Pide la acción al controlador y reemplaza el detalle con la vista parcial
+        function actualizarDetalle(url, onError) {
+            fetch(url, { method: 'GET' })
+                .then(function (response) {
+                    if (!response.ok) {
+                        return response.text().then(text => { throw new Error(text) })
+                    }
+                    return response.text();
+                })
+                .then((text) => {
+                    document.getElementById("detalleFacturaView").innerHTML = text
+                }).catch(error => {
+                    if (onError) onError();
+                    Swal.fire({ title: "Error", text: error.message, icon: "error" })
+                })
+        }
         //Controles de AJAX
         function onBegin() {
             console.log("onBegin")
@@ -300,13 +388,15 @@
             document.getElementById("myForm").reset();
          
             document.getElementById("detalleFacturaView").innerHTML = ""
+            // Se espera a que el usuario vea la notificación antes de continuar
             Swal.fire({
                 icon: "success",
-                title: "Orden salvada ...",
+                title: "Factura registrada",
                 showConfirmButton: true,
                 timer: 15000
+            }).then(function () {
+                window.location.href = '@Url.Action(esProforma ? "Index" : "Create", "Factura")';
             });
-            location.reload();
         }
         function onComplete() {
             console.log("Fin del proceso")

@@ -10,10 +10,10 @@
                     <thead>
                         <tr>
                             <th>
-                                @Html.DisplayNameFor(model => model.IdProducto)
+                                Código
                             </th>
                             <th>
-                                @Html.DisplayNameFor(model => model.NombreProducto)
+                                Producto / Servicio
                             </th>
                             <th>
                                 @Html.DisplayNameFor(model => model.Cantidad)
@@ -23,6 +23,9 @@
                             </th>
                             <th>
                                 @Html.DisplayNameFor(model => model.Subtotal)
+                            </th>
+                            <th>
+                                IVA 13%
                             </th>
                             <th></th>
                         </tr>
@@ -34,35 +37,54 @@
                                 {
                                     <tr>
                                         <td align="center">
-                                            @Html.DisplayFor(modelItem => item.IdProducto)
+                                            @(item.IdProducto != null ? "P-" + item.IdProducto : "S-" + item.IdServicio)
                                         </td>
                                         <td align="left">
-                                            @Html.DisplayFor(modelItem => item.NombreProducto)
+                                            @(item.NombreProducto ?? item.NombreServicio)
+                                        </td>
+                                        <td align="right" style="width:110px">
+                                            <!-- Cantidad editable: en 0 se elimina la línea -->
+                                            <input type="number" min="0" step="1" class="form-control form-control-sm text-end"
+                                                   value="@item.Cantidad"
+                                                   onchange="cambiarCantidad(this, @(item.IdProducto?.ToString() ?? "null"), @(item.IdServicio?.ToString() ?? "null"), @item.Cantidad)" />
                                         </td>
                                         <td align="right">
-                                            @Html.DisplayFor(modelItem => item.Cantidad)
+                                            &#8353;@item.PrecioUnitario.ToString("N2")
                                         </td>
                                         <td align="right">
-                                            @Html.DisplayFor(modelItem => item.PrecioUnitario)
+                                            &#8353;@item.Subtotal.ToString("N2")
                                         </td>
                                         <td align="right">
-                                            @Html.DisplayFor(modelItem => item.Subtotal)
+                                            &#8353;@item.Impuesto.ToString("N2")
                                         </td>
                                         <td align="right">
-                                            <button type="button" class="btn btn-danger" onclick="deleteLibro(@item.IdProducto)">Eliminar</button>
+                                            @if (item.IdProducto != null)
+                                            {
+                                                <button type="button" class="btn btn-danger" onclick="deleteLibro(@item.IdProducto)">Eliminar</button>
+                                            }
+                                            else
+                                            {
+                                                <button type="button" class="btn btn-danger" onclick="deleteServicio(@item.IdServicio)">Eliminar</button>
+                                            }
                                         </td>
                                     </tr>
                                 }
-                            <!-- Mostrar total-->
+                            <!-- Mostrar totales-->
+                            var subtotal = Model?.Sum(p => p.Subtotal) ?? 0;
+                            var impuesto = Model?.Sum(p => p.Impuesto) ?? 0;
                             <tr>
-                                <td colspan="4" align="right">Total </td>
-                                <td align="right">
-                                    @{
-                                        if (Model != null)
-                                            @Model.Sum(p => p.Subtotal).ToString("N2")
-                                            ;
-                                    }
-                                </td>
+                                <td colspan="5" align="right">Subtotal</td>
+                                <td align="right">&#8353;@subtotal.ToString("N2")</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td colspan="5" align="right">Impuesto (IVA 13%)</td>
+                                <td align="right">&#8353;@impuesto.ToString("N2")</td>
+                                <td></td>
+                            </tr>
+                            <tr class="fw-bold">
+                                <td colspan="5" align="right">Total </td>
+                                <td align="right">&#8353;@((subtotal + impuesto).ToString("N2"))</td>
                                 <td align="right">
                                 </td>
                             </tr>

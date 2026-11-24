@@ -34,4 +34,32 @@
         <p id="CantidadSelect" name="CantidadSelect" class="form-label fw-bold">Cantidad Stock: -</p>
     </div>
 </div>
+<hr />
+<!-- Servicios: solo los que ofrece la sucursal del encargado -->
+<div class="row" id="MyAddServicio">
+    <div class="col-md-6">
+        <div class="form-group">
+            <label class="control-label">Servicio</label>
+            <select id="IdServicioModal" class="form-select form-select-sm" onchange="selectServicio()">
+                <option value="" data-precio="">-- Seleccione un servicio --</option>
+                @if (ViewBag.Servicios != null)
+                {
+                    foreach (var s in (IEnumerable<PalermoAgenda.Application.DTOs.ServicioDTO>)ViewBag.Servicios)
+                    {
+                        <option value="@s.IdServicio" data-precio="@s.Precio.ToString("N2")">@s.Nombre</option>
+                    }
+                }
+            </select>
+        </div>
+        <div class="form-group">
+            <label class="control-label">Cantidad</label>
+            <input id="CantidadServicioModal" type="number" min="1" value="1" class="form-control form-control-sm" />
+        </div>
+        <br />
+        <button type="button" class="btn btn-success" onclick="addServicio()">Agregar Servicio</button>
+    </div>
+    <div class="col-md-6 text-left">
+        <p id="PrecioServicioSelect" class="form-label fw-bold">Tarifa: -</p>
+    </div>
+</div>
 

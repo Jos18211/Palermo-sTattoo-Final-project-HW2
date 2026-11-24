@@ -13,10 +13,15 @@ namespace PalermosTattooAgenda0.Web.Controllers
         private readonly IServiceFactura _serviceFactura;
         private readonly IServiceUsuario _serviceUsuario;
         private readonly IServiceArtista _serviceArtista;
+        private readonly IServiceServicio _serviceServicio;
+        // El encargado se establece en código, no en la interfaz
+        private const int IdEncargado = 2;
         public FacturaController(IServiceProducto serviceProducto,
                              IServiceFactura serviceFactura,
-                             IServiceUsuario serviceUsuario, IServiceArtista serviceArtista)
+                             IServiceUsuario serviceUsuario, IServiceArtista serviceArtista,
+                             IServiceServicio serviceServicio)
         {
+            _serviceServicio = serviceServicio;
             _serviceProducto = serviceProducto;
             _serviceFactura = serviceFactura;
             _serviceUsuario = serviceUsuario;
@@ -25,7 +30,7 @@ namespace PalermosTattooAgenda0.Web.Controllers
         // GET: FacturaController
         public async Task<ActionResult> Index()
         {
-            var collection = await _serviceFactura.ListAsync();
+            var collection = await _serviceFactura.ListByEncargadoAsync(IdEncargado);
             return View(collection);
         }
         public async Task<IActionResult> Details(int? id)
@@ -37,7 +42,9 @@ namespace PalermosTattooAgenda0.Web.Controllers
                     return RedirectToAction("Index");
                 }
                 var @object = await _serviceFactura.FindByIdAsync(id.Value);
-                if (@object == null)
+                // Solo se muestran las facturas de la sucursal del encargado (también por URL)
+                var encargado = await _serviceUsuario.FindByIdAsync(IdEncargado);
+                if (@object == null || @object.IdArtista != encargado.IdArtista)
                 {
                     throw new Exception("Factura no existente");
                 }
@@ -54,20 +61,57 @@ namespace PalermosTattooAgenda0.Web.Controllers
         {
             var nextReceiptNumber = await _serviceFactura.GetNextNumberFactura();
             ViewBag.CurrentReceipt = nextReceiptNumber;
-            var artistas = await _serviceArtista.ListAsync();
-            ViewBag.ListArtistas = new SelectList(items: artistas.Where(a => a.Estado),
-                dataValueField: nameof(ArtistaDTO.IdArtista),
-                dataTextField: nameof(ArtistaDTO.Nombre));
+            // Sucursal y encargado: se muestran, no se seleccionan
+            var encargado = await _serviceUsuario.FindByIdAsync(IdEncargado);
+            await CargarEncabezado(encargado);
             // Clear CarShopping
             TempData["CartShopping"] = null;
             TempData.Keep();
-            return View();
+            return View(new FacturaDTO { IdArtista = encargado.IdArtista ?? 0 });
+        }
+
+        private async Task CargarEncabezado(UsuarioDTO encargado)
+        {
+            var sucursal = await _serviceArtista.FindByIdAsync(encargado.IdArtista ?? 0);
+            ViewBag.NombreEncargado = encargado.Nombre;
+            ViewBag.NombreSucursal = sucursal?.Nombre;
+            // Servicios que ofrece la sucursal, para agregarlos al detalle
+            ViewBag.Servicios = await _serviceServicio.ListByArtistaAsync(encargado.IdArtista ?? 0);
+        }
+
+        // GET: FacturaController/Facturar/5 -> precarga una proforma para facturarla
+        public async Task<ActionResult> Facturar(int id)
+        {
+            var encargado = await _serviceUsuario.FindByIdAsync(IdEncargado);
+            var proforma = await _serviceFactura.FindByIdAsync(id);
+            if (proforma == null || proforma.Estado != "Proforma" || proforma.IdArtista != encargado.IdArtista)
+            {
+                return RedirectToAction("Index");
+            }
+            ViewBag.CurrentReceipt = proforma.IdFactura;
+            ViewBag.Proforma = true;
+            await CargarEncabezado(encargado);
+            // El detalle de la proforma pasa al carrito para seguir editándolo
+            var lista = proforma.FacturaDetalle.Select(d => new FacturaDetalleDTO
+            {
+                IdProducto = d.IdProducto,
+                NombreProducto = d.IdProductoNavigation?.Nombre,
+                IdServicio = d.IdServicio,
+                NombreServicio = d.IdServicioNavigation?.Nombre,
+                Cantidad = d.Cantidad,
+                PrecioUnitario = d.PrecioUnitario,
+                Subtotal = d.PrecioUnitario * d.Cantidad
+            }).ToList();
+            TempData["CartShopping"] = JsonSerializer.Serialize(lista);
+            TempData.Keep();
+            proforma.FacturaDetalle = lista;
+            return View("Create", proforma);
         }
 
         // POST: FacturaController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create(FacturaDTO factura)
+        public async Task<ActionResult> Create(FacturaDTO factura, int? idProforma)
         {
             string json;
             try
@@ -79,10 +123,13 @@ namespace PalermosTattooAgenda0.Web.Controllers
                     TempData.Keep();
                     return BadRequest("Cliente No existe");
                 }
+                // La sucursal siempre es la del encargado
+                var encargado = await _serviceUsuario.FindByIdAsync(IdEncargado);
+                factura.IdArtista = encargado.IdArtista ?? 0;
                 if (factura.IdArtista <= 0)
                 {
                     TempData.Keep();
-                    return BadRequest("Seleccione la sucursal");
+                    return BadRequest("El encargado no tiene sucursal asignada");
                 }
                 json = (string)TempData["CartShopping"]!;
                 if (string.IsNullOrEmpty(json))
@@ -91,6 +138,11 @@ namespace PalermosTattooAgenda0.Web.Controllers
                     return BadRequest("No hay datos por facturar");
                 }
                 var lista = JsonSerializer.Deserialize<List<FacturaDetalleDTO>>(json!)!;
+                if (lista.Count == 0)
+                {
+                    TempData.Keep();
+                    return BadRequest("No hay datos por facturar");
+                }
                 //Agregar datos faltantes a la orden
                 factura.IdFactura = 0;
                 factura.FechaFactura = DateTime.Today;
@@ -98,9 +150,29 @@ namespace PalermosTattooAgenda0.Web.Controllers
                 factura.FacturaDetalle = lista;
                 factura.Subtotal = lista.Sum(p => p.Subtotal);
                 factura.PorcentajeImpuesto = 13;
-                factura.MontoImpuesto = factura.Subtotal * factura.PorcentajeImpuesto / 100;
+                factura.MontoImpuesto = lista.Sum(p => p.Impuesto);
                 factura.Total = factura.Subtotal + factura.MontoImpuesto;
-                
+
+                if (idProforma.HasValue)
+                {
+                    // Facturar proforma: misma fila, el cliente debe ser el de la proforma
+                    var proforma = await _serviceFactura.FindByIdChangeAsync(idProforma.Value);
+                    if (proforma == null || proforma.Estado != "Proforma" || proforma.IdArtista != factura.IdArtista)
+                    {
+                        TempData.Keep();
+                        return BadRequest("La proforma no existe o ya fue facturada");
+                    }
+                    if (proforma.IdCliente != factura.IdCliente)
+                    {
+                        TempData.Keep();
+                        return BadRequest("El cliente no corresponde al de la proforma");
+                    }
+                    factura.IdFactura = proforma.IdFactura;
+                    factura.IdCita = proforma.IdCita;
+                    await _serviceFactura.FacturarProformaAsync(factura);
+                    return RedirectToAction("Index");
+                }
+
                 await _serviceFactura.AddAsync(factura);
                 return RedirectToAction("Index");
             }
@@ -229,7 +301,116 @@ namespace PalermosTattooAgenda0.Web.Controllers
             // return Content("Ok");
             return PartialView("_DetailFactura", lista);
         }
-    
+
+        public async Task<IActionResult> AddServicio(int id, int cantidad)
+        {
+            var lista = new List<FacturaDetalleDTO>();
+            string json = "";
+            if (cantidad <= 0)
+            {
+                TempData.Keep();
+                return BadRequest("La cantidad debe ser mayor a cero");
+            }
+            // Solo servicios que ofrece la sucursal del encargado
+            var encargado = await _serviceUsuario.FindByIdAsync(IdEncargado);
+            var servicios = await _serviceServicio.ListByArtistaAsync(encargado.IdArtista ?? 0);
+            var servicio = servicios.FirstOrDefault(s => s.IdServicio == id);
+            if (servicio == null)
+            {
+                TempData.Keep();
+                return BadRequest("El servicio no está disponible en esta sucursal");
+            }
+            if (TempData["CartShopping"] != null)
+            {
+                json = (string)TempData["CartShopping"]!;
+                lista = JsonSerializer.Deserialize<List<FacturaDetalleDTO>>(json!)!;
+            }
+            //Buscar si ya existe en la factura
+            var item = lista.FirstOrDefault(o => o.IdServicio == id);
+            if (item != null)
+            {
+                item.Cantidad += cantidad;
+                item.Subtotal = item.Cantidad * item.PrecioUnitario;
+            }
+            else
+            {
+                lista.Add(new FacturaDetalleDTO
+                {
+                    IdServicio = servicio.IdServicio,
+                    NombreServicio = servicio.Nombre,
+                    Cantidad = cantidad,
+                    PrecioUnitario = servicio.Precio,
+                    Subtotal = servicio.Precio * cantidad
+                });
+            }
+            TempData["CartShopping"] = JsonSerializer.Serialize(lista);
+            TempData.Keep();
+            return PartialView("_DetailFactura", lista);
+        }
+
+        public IActionResult DeleteServicio(int idServicio)
+        {
+            List<FacturaDetalleDTO> lista = new List<FacturaDetalleDTO>();
+            string json = "";
+            if (TempData["CartShopping"] != null)
+            {
+                json = (string)TempData["CartShopping"]!;
+                lista = JsonSerializer.Deserialize<List<FacturaDetalleDTO>>(json!)!;
+                int idx = lista.FindIndex(p => p.IdServicio == idServicio);
+                if (idx >= 0)
+                {
+                    lista.RemoveAt(idx);
+                }
+                json = JsonSerializer.Serialize(lista);
+                TempData["CartShopping"] = json;
+            }
+            TempData.Keep();
+            return PartialView("_DetailFactura", lista);
+        }
+
+        // Cambia la cantidad de una línea (producto o servicio); en 0 la línea se elimina
+        public async Task<IActionResult> CambiarCantidad(int? idProducto, int? idServicio, int cantidad)
+        {
+            List<FacturaDetalleDTO> lista = new List<FacturaDetalleDTO>();
+            if (cantidad < 0)
+            {
+                TempData.Keep();
+                return BadRequest("La cantidad no puede ser negativa");
+            }
+            if (TempData["CartShopping"] != null)
+            {
+                string json = (string)TempData["CartShopping"]!;
+                lista = JsonSerializer.Deserialize<List<FacturaDetalleDTO>>(json!)!;
+            }
+            var item = idProducto != null
+                ? lista.FirstOrDefault(o => o.IdProducto == idProducto)
+                : lista.FirstOrDefault(o => o.IdServicio == idServicio);
+            if (item != null)
+            {
+                if (cantidad == 0)
+                {
+                    lista.Remove(item);
+                }
+                else
+                {
+                    if (item.IdProducto != null)
+                    {
+                        var producto = await _serviceProducto.FindByIdAsync(item.IdProducto.Value);
+                        if (producto == null || cantidad > producto.Stock)
+                        {
+                            TempData.Keep();
+                            return BadRequest("No hay inventario suficiente!");
+                        }
+                    }
+                    item.Cantidad = cantidad;
+                    item.Subtotal = item.Cantidad * item.PrecioUnitario;
+                }
+            }
+            TempData["CartShopping"] = JsonSerializer.Serialize(lista);
+            TempData.Keep();
+            return PartialView("_DetailFactura", lista);
+        }
+
 
 
 // POST: FacturaController/Delete/5

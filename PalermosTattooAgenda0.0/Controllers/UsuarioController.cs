@@ -117,7 +117,7 @@ namespace PalermosTattooAgenda0.Web.Controllers
         public async Task<IActionResult> GetClienteByName(string filtro)
         {
             var collection = await _serviceUsuario.FindByNombreRolAsync(filtro);
-            return Json(collection.Select(u => new { u.IdUsuario, u.Nombre, u.Identificacion }));
+            return Json(collection.Select(u => new { u.IdUsuario, u.Nombre, u.Identificacion, u.Email }));
         }
 
 
