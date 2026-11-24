@@ -1,4 +1,4 @@
-@model PalermoAgenda.Application.DTOs.HorarioDTO
+﻿@model PalermoAgenda.Application.DTOs.HorarioDTO
 @{
     ViewData["Title"] = "Nuevo horario";
 }
@@ -13,7 +13,7 @@
             <div class="mb-3">
                 <label asp-for="IdArtista" class="form-label"></label>
                 <select asp-for="IdArtista" asp-items="ViewBag.ListSucursales" class="form-select">
-                    <option value="0">-- Seleccione una sucursal --</option>
+                    <option value="0">-- Seleccione un artista --</option>
                 </select>
                 <span asp-validation-for="IdArtista" class="text-danger"></span>
             </div>

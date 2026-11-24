@@ -67,7 +67,7 @@ namespace PalermoAgenda.Application.Services.Implementations
             var choqueHorario = horarios.FirstOrDefault(h =>
                 ValidacionAgenda.SeSobreponen(dto.HoraInicio, dto.HoraFin, h.HoraInicio, h.HoraFin));
             if (choqueHorario != null)
-                return $"Sobreposición de horarios: la sucursal ya tiene un horario de " +
+                return $"Sobreposición de horarios: el artista ya tiene un horario de " +
                        $"{ValidacionAgenda.Rango(choqueHorario.HoraInicio, choqueHorario.HoraFin)} ese día";
 
             // 3. Sobreposición horario con bloqueo (misma sucursal y fecha)
@@ -78,7 +78,7 @@ namespace PalermoAgenda.Application.Services.Implementations
                 if (ValidacionAgenda.SeSobreponen(dto.HoraInicio, dto.HoraFin, inicio, fin))
                 {
                     var detalle = b.TodoElDia ? "un bloqueo de todo el día" : $"un bloqueo de {ValidacionAgenda.Rango(inicio, fin)}";
-                    return $"Sobreposición de horario con bloqueo: la sucursal tiene {detalle} ese día";
+                    return $"Sobreposición de horario con bloqueo: el artista tiene {detalle} ese día";
                 }
             }
             return null;

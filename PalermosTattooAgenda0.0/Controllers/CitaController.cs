@@ -15,7 +15,8 @@ namespace PalermosTattooAgenda0.Web.Controllers
         private readonly IServiceServicio _serviceServicio;
         private readonly IServiceHorario _serviceHorario;
         private readonly IServiceBloqueo _serviceBloqueo;
-        private const int IdEncargado = 2;
+        // Se define en un solo lugar: Util/EncargadoActual.cs
+        private const int IdEncargado = EncargadoActual.Id;
         public CitaController(IServiceCita serviceCita, IServiceUsuario serviceUsuario,
                               IServiceArtista serviceArtista, IServiceServicio serviceServicio,
                               IServiceHorario serviceHorario, IServiceBloqueo serviceBloqueo)
@@ -100,7 +101,7 @@ namespace PalermosTattooAgenda0.Web.Controllers
 
             // IdCliente exist? (si viene en 0 ya lo valida el [Range] del DTO)
             if (dto.IdCliente > 0 && await _serviceUsuario.FindByIdAsync(dto.IdCliente) == null)
-                ModelState.AddModelError(string.Empty, "Cliente No existe");
+                ModelState.AddModelError(string.Empty, "El cliente no existe");
 
             // Reglas de negocio: horario, bloqueos y sobreposición (capa de servicio)
             if (ModelState.IsValid)

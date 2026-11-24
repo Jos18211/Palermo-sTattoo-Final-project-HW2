@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using PalermoAgenda.Application.DTOs;
 using PalermoAgenda.Application.Services.Interfaces;
+using PalermosTattooAgenda0.Web.Util;
 using System.Text.Json;
 
 namespace PalermosTattooAgenda0.Web.Controllers
@@ -14,8 +15,8 @@ namespace PalermosTattooAgenda0.Web.Controllers
         private readonly IServiceUsuario _serviceUsuario;
         private readonly IServiceArtista _serviceArtista;
         private readonly IServiceServicio _serviceServicio;
-        // El encargado se establece en código, no en la interfaz
-        private const int IdEncargado = 2;
+        // El encargado se establece en código, no en la interfaz (Util/EncargadoActual.cs)
+        private const int IdEncargado = EncargadoActual.Id;
         public FacturaController(IServiceProducto serviceProducto,
                              IServiceFactura serviceFactura,
                              IServiceUsuario serviceUsuario, IServiceArtista serviceArtista,
@@ -121,7 +122,7 @@ namespace PalermosTattooAgenda0.Web.Controllers
                 if (cliente == null)
                 {
                     TempData.Keep();
-                    return BadRequest("Cliente No existe");
+                    return BadRequest("Cliente no existe");
                 }
                 // La sucursal siempre es la del encargado
                 var encargado = await _serviceUsuario.FindByIdAsync(IdEncargado);
@@ -129,7 +130,7 @@ namespace PalermosTattooAgenda0.Web.Controllers
                 if (factura.IdArtista <= 0)
                 {
                     TempData.Keep();
-                    return BadRequest("El encargado no tiene sucursal asignada");
+                    return BadRequest("El encargado no tiene artista asignado");
                 }
                 json = (string)TempData["CartShopping"]!;
                 if (string.IsNullOrEmpty(json))
@@ -215,7 +216,7 @@ namespace PalermosTattooAgenda0.Web.Controllers
             if (detalle.Cantidad > Producto.Stock)
             {
                 TempData.Keep();
-                return BadRequest("No hay inventario suficiente!");
+                return BadRequest("¡No hay inventario suficiente!");
             }
             else
             {
@@ -318,7 +319,7 @@ namespace PalermosTattooAgenda0.Web.Controllers
             if (servicio == null)
             {
                 TempData.Keep();
-                return BadRequest("El servicio no está disponible en esta sucursal");
+                return BadRequest("El servicio no está disponible con este artista");
             }
             if (TempData["CartShopping"] != null)
             {
@@ -399,7 +400,7 @@ namespace PalermosTattooAgenda0.Web.Controllers
                         if (producto == null || cantidad > producto.Stock)
                         {
                             TempData.Keep();
-                            return BadRequest("No hay inventario suficiente!");
+                            return BadRequest("¡No hay inventario suficiente!");
                         }
                     }
                     item.Cantidad = cantidad;

@@ -19,8 +19,8 @@ namespace PalermoAgenda.Application.DTOs
         public string Nombre { get; set; } = null!;
      
 
-        [Display(Name = "Descripcion")]
-        [Required(ErrorMessage = "{0} es requerido")]
+        [Display(Name = "Descripción")]
+        [Required(ErrorMessage = "{0} es requerida")]
         [StringLength(500)]
         public string Descripcion { get; set; } = null!;
 
@@ -30,9 +30,9 @@ namespace PalermoAgenda.Application.DTOs
         [Range(1, 99999999, ErrorMessage = "{0} debe ser mayor a cero")]
         public decimal Precio { get; set; }
 
-        [Display(Name = "Duracion (min)")]
-        [Required(ErrorMessage = "{0} es requerido")]
-        [Range(30, 480, ErrorMessage = "{0} Debe estar entre 30 y 480 minutos")]
+        [Display(Name = "Duración (min)")]
+        [Required(ErrorMessage = "{0} es requerida")]
+        [Range(30, 480, ErrorMessage = "{0} debe estar entre 30 y 480 minutos")]
         public int DuracionMinutos { get; set; }
 
 

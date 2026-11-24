@@ -1,4 +1,4 @@
-using PalermoAgenda.Infraestructure.Models;
+﻿using PalermoAgenda.Infraestructure.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -10,22 +10,22 @@ namespace PalermoAgenda.Application.DTOs
 {
     public record ProductoDTO
     {
-        [Display(Name = "Identificador Producto")]
+        [Display(Name = "Identificador producto")]
         public int IdProducto { get; set; }
 
-        [Display(Name = "Nombre Producto")]
+        [Display(Name = "Nombre producto")]
         [Required(ErrorMessage = "{0} es requerido")]
         [StringLength(100, MinimumLength = 3)]
         public string Nombre { get; set; } = null!;
 
         [Display(Name = "Descripción")]
-        [Required(ErrorMessage = "{0} es requerido")]
+        [Required(ErrorMessage = "{0} es requerida")]
         [StringLength(500)]
         public string Descripcion { get; set; } = null!;
 
         [Display(Name = "Categoría")]
-        [Required(ErrorMessage = "{0} es requerido")]
-        [Range(1, int.MaxValue,ErrorMessage ="Selecione una categoria")]
+        [Required(ErrorMessage = "{0} es requerida")]
+        [Range(1, int.MaxValue,ErrorMessage = "Seleccione una categoría")]
         public int IdCategoriaProducto { get; set; }
 
         [Display(Name = "Precio")]
@@ -39,7 +39,7 @@ namespace PalermoAgenda.Application.DTOs
         public string Marca { get; set; } = null!;
 
         [Display(Name = "Presentación")]
-        [Required(ErrorMessage = "{0} es requerido")]
+        [Required(ErrorMessage = "{0} es requerida")]
         [StringLength(50)]
         public string Presentacion { get; set; } = null!;
 

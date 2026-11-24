@@ -57,7 +57,7 @@ namespace PalermoAgenda.Application.Services.Implementations
                 return "El servicio seleccionado no está disponible";
 
             if (!servicio.IdArtista.Any(a => a.IdArtista == dto.IdArtista))
-                return "El servicio seleccionado no lo ofrece esta sucursal";
+                return "El servicio seleccionado no lo ofrece este artista";
 
 
             dto.HoraFin = dto.HoraInicio.AddMinutes(servicio.DuracionMinutos);
@@ -69,7 +69,7 @@ namespace PalermoAgenda.Application.Services.Implementations
             // 2. La cita debe caber completa dentro de un horario de la sucursal ese día
             var horarios = await _repositoryHorario.ListByArtistaFechaAsync(dto.IdArtista, dto.Fecha);
             if (!horarios.Any())
-                return "La sucursal no tiene horario de atención en esa fecha";
+                return "El artista no tiene horario de atención en esa fecha";
 
             bool cabe = horarios.Any(h => h.HoraInicio <= dto.HoraInicio && dto.HoraFin <= h.HoraFin);
             if (!cabe)
@@ -82,7 +82,7 @@ namespace PalermoAgenda.Application.Services.Implementations
             var choqueCita = citas.FirstOrDefault(c =>
                 ValidacionAgenda.SeSobreponen(dto.HoraInicio, dto.HoraFin, c.HoraInicio, c.HoraFin));
             if (choqueCita != null)
-                return $"Sobreposición de citas: la sucursal ya tiene una cita de " +
+                return $"Sobreposición de citas: el artista ya tiene una cita de " +
                        $"{ValidacionAgenda.Rango(choqueCita.HoraInicio, choqueCita.HoraFin)} ese día";
 
 
@@ -94,7 +94,7 @@ namespace PalermoAgenda.Application.Services.Implementations
                 if (ValidacionAgenda.SeSobreponen(dto.HoraInicio, dto.HoraFin, inicio, fin))
                 {
                     var detalle = b.TodoElDia ? "un bloqueo de todo el día" : $"un bloqueo de {ValidacionAgenda.Rango(inicio, fin)}";
-                    return $"Sobreposición de horario con bloqueo: la sucursal tiene {detalle} ese día";
+                    return $"Sobreposición de horario con bloqueo: el artista tiene {detalle} ese día";
                 }
             }
             if (dto.TieneAlergias && string.IsNullOrWhiteSpace(dto.DetalleAlergias))

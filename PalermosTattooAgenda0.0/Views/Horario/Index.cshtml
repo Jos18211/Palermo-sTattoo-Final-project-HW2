@@ -1,4 +1,4 @@
-@using PalermoAgenda.Application.DTOs
+﻿@using PalermoAgenda.Application.DTOs
 @{
     ViewData["Title"] = "Horarios y bloqueos";
     var horarios = (IEnumerable<HorarioDTO>)ViewBag.Horarios;
@@ -6,14 +6,14 @@
     int? idArtista = ViewBag.IdArtista;
 }
 
-<h1>Horarios y bloqueos por sucursal</h1>
+<h1>Horarios y bloqueos por Artista</h1>
 
 <form method="get" asp-action="Index" class="row g-2 align-items-end mb-4">
     <div class="col-md-5">
-        <label for="idArtista" class="form-label">Sucursal</label>
+        <label for="idArtista" class="form-label">Artista</label>
         <select id="idArtista" name="idArtista" asp-items="ViewBag.ListSucursales"
                 class="form-select" onchange="this.form.submit()">
-            <option value="">-- Seleccione una sucursal --</option>
+            <option value="">-- Seleccione un artista --</option>
         </select>
     </div>
     @if (idArtista.HasValue)
@@ -31,7 +31,7 @@
 
 @if (!idArtista.HasValue)
 {
-    <div class="alert alert-info">Seleccione una sucursal para ver sus horarios y bloqueos.</div>
+    <div class="alert alert-info">Seleccione un artista para ver sus horarios y bloqueos.</div>
 }
 else
 {
@@ -40,7 +40,7 @@ else
             <h4><i class="bi bi-clock"></i> Horarios</h4>
             @if (!horarios.Any())
             {
-                <p class="text-muted">La sucursal no tiene horarios registrados.</p>
+                <p class="text-muted">El artista no tiene horarios registrados.</p>
             }
             else
             {
@@ -74,7 +74,7 @@ else
             <h4><i class="bi bi-slash-circle"></i> Bloqueos</h4>
             @if (!bloqueos.Any())
             {
-                <p class="text-muted">La sucursal no tiene bloqueos registrados.</p>
+                <p class="text-muted">El artista no tiene bloqueos registrados.</p>
             }
             else
             {

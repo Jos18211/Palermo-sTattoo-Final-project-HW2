@@ -16,12 +16,12 @@ namespace PalermoAgenda.Application.DTOs
 
         [Display(Name = "Cliente")]
         [Required(ErrorMessage = "{0} es requerido")]
-        [Range(1, int.MaxValue, ErrorMessage = "Seleccione un Cliente")]
+        [Range(1, int.MaxValue, ErrorMessage = "Seleccione un cliente")]
         public int IdCliente { get; set; }
 
         [Display(Name = "Artista")]
         [Required(ErrorMessage = "{0} es requerido")]
-        [Range(1, int.MaxValue, ErrorMessage = "Seleccione una sucursal")]
+        [Range(1, int.MaxValue, ErrorMessage = "Seleccione un artista")]
         public int IdArtista { get; set; }
 
         [Display(Name = "Servicio")]
@@ -44,8 +44,8 @@ namespace PalermoAgenda.Application.DTOs
         [Required(ErrorMessage = "{0} es requerida")]
         public TimeOnly HoraFin { get; set; }
 
-        [Display(Name = "Zona del Cuerpo")]
-        [Required(ErrorMessage = "{0} es requerido")]
+        [Display(Name = "Zona del cuerpo")]
+        [Required(ErrorMessage = "{0} es requerida")]
         [StringLength(100, MinimumLength = 3)]
         public string ZonaCuerpo { get; set; } = null!;
 
@@ -57,7 +57,7 @@ namespace PalermoAgenda.Application.DTOs
         public string? DetalleAlergias { get; set; }
 
         [Display(Name = "Referencia del diseño")]
-        [Required(ErrorMessage = "{0} es requerido")]
+        [Required(ErrorMessage = "{0} es requerida")]
         [StringLength(500, MinimumLength = 3)]
         public string? ReferenciaDiseno { get; set; }
 
@@ -70,7 +70,7 @@ namespace PalermoAgenda.Application.DTOs
         [Display(Name = "Cliente")]
         public virtual UsuarioDTO? IdClienteNavigation { get; set; } = null!;
 
-        [Display(Name = "Estado Cita")]
+        [Display(Name = "Estado cita")]
         public virtual EstadoCitaDTO? IdEstadoCitaNavigation { get; set; } = null!;
 
         [Display(Name = "Servicio")]

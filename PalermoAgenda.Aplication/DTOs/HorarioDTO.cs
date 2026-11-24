@@ -7,8 +7,8 @@ namespace PalermoAgenda.Application.DTOs
     {
         public int IdHorario { get; set; }
 
-        [Display(Name = "Sucursal")]
-        [Range(1, int.MaxValue, ErrorMessage = "Seleccione una sucursal")]
+        [Display(Name = "Artista")]
+        [Range(1, int.MaxValue, ErrorMessage = "Seleccione un artista")]
         public int IdArtista { get; set; }
 
         // Se calcula a partir de la fecha (1 = lunes ... 7 = domingo)
@@ -29,7 +29,7 @@ namespace PalermoAgenda.Application.DTOs
         public DateOnly Fecha { get; set; }
 
         // Solo para mostrar (listado y detalle)
-        [Display(Name = "Sucursal")]
+        [Display(Name = "Artista")]
         public string? NombreSucursal { get; set; }
     }
 }

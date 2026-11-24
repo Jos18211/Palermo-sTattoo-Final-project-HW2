@@ -14,13 +14,13 @@ namespace PalermoAgenda.Application.DTOs
     {
         public int IdArtista { get; set; }
 
-        [DisplayName("Nombre del Artista")]
+        [DisplayName("Nombre del artista")]
         [Required(ErrorMessage = "{0} es requerido")]
         [StringLength(100, ErrorMessage = "El nombre del artista no puede tener más de 100 caracteres.")]
         public string Nombre { get; set; } = null!;
 
         [DisplayName("Descripción")]
-        [Required(ErrorMessage = "{0} es requerido")]
+        [Required(ErrorMessage = "{0} es requerida")]
         [StringLength(500, ErrorMessage = "La descripción no puede tener más de 500 caracteres.")]
         public string Descripcion { get; set; } = null!;
 
@@ -30,7 +30,7 @@ namespace PalermoAgenda.Application.DTOs
         public string Telefono { get; set; } = null!;
 
         [DisplayName("Dirección")]
-        [Required(ErrorMessage = "{0} es requerido")]
+        [Required(ErrorMessage = "{0} es requerida")]
         [StringLength(250, ErrorMessage = "La dirección no puede tener más de 250 caracteres.")]
         public string Direccion { get; set; } = null!;
 

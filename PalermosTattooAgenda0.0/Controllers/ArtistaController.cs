@@ -104,7 +104,7 @@ namespace PalermosTattooAgenda0.Web.Controllers
             }
             if (!string.IsNullOrWhiteSpace(dto.Email) && await _serviceArtista.ExisteEmailAsync(dto.Email, 0))
             {
-                ModelState.AddModelError("Email", "Ya existe una sucursal con ese email");
+                ModelState.AddModelError("Email", "Ya existe un artista con ese email");
             }
             if (dto.SelectedEncargados == null || dto.SelectedEncargados.Length == 0)
             {
@@ -170,7 +170,7 @@ namespace PalermosTattooAgenda0.Web.Controllers
             }
             if (!string.IsNullOrWhiteSpace(dto.Email) && await _serviceArtista.ExisteEmailAsync(dto.Email, id))
             {
-                ModelState.AddModelError("Email", "Ya existe una sucursal con ese email");
+                ModelState.AddModelError("Email", "Ya existe un artista con ese email");
             }
             if (dto.SelectedEncargados == null || dto.SelectedEncargados.Length == 0)
             {

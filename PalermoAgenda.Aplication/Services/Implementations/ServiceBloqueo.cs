@@ -1,4 +1,4 @@
-using AutoMapper;
+﻿using AutoMapper;
 using PalermoAgenda.Application.DTOs;
 using PalermoAgenda.Application.Services.Interfaces;
 using PalermoAgenda.Infraestructure.Models;
@@ -60,7 +60,7 @@ namespace PalermoAgenda.Application.Services.Implementations
                 if (ValidacionAgenda.SeSobreponen(inicio, fin, bInicio, bFin))
                 {
                     var detalle = b.TodoElDia ? "un bloqueo de todo el día" : $"un bloqueo de {ValidacionAgenda.Rango(bInicio, bFin)}";
-                    return $"Sobreposición de bloqueos: la sucursal ya tiene {detalle} ese día";
+                    return $"Sobreposición de bloqueos: el artista ya tiene {detalle} ese día";
                 }
             }
 
@@ -69,7 +69,7 @@ namespace PalermoAgenda.Application.Services.Implementations
             var choque = horarios.FirstOrDefault(h =>
                 ValidacionAgenda.SeSobreponen(inicio, fin, h.HoraInicio, h.HoraFin));
             if (choque != null)
-                return $"Sobreposición de horarios con bloqueos: la sucursal tiene un horario de " +
+                return $"Sobreposición de horarios con bloqueos: el artista tiene un horario de " +
                        $"{ValidacionAgenda.Rango(choque.HoraInicio, choque.HoraFin)} ese día";
 
             return null;

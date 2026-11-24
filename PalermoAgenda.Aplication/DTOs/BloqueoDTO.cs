@@ -1,4 +1,4 @@
-using PalermoAgenda.Application.Validations;
+﻿using PalermoAgenda.Application.Validations;
 using System.ComponentModel.DataAnnotations;
 
 namespace PalermoAgenda.Application.DTOs
@@ -7,8 +7,8 @@ namespace PalermoAgenda.Application.DTOs
     {
         public int IdBloqueo { get; set; }
 
-        [Display(Name = "Sucursal")]
-        [Range(1, int.MaxValue, ErrorMessage = "Seleccione una sucursal")]
+        [Display(Name = "Artista")]
+        [Range(1, int.MaxValue, ErrorMessage = "Seleccione un artista")]
         public int IdArtista { get; set; }
 
         [Display(Name = "Fecha")]
@@ -32,7 +32,7 @@ namespace PalermoAgenda.Application.DTOs
         public string? Motivo { get; set; }
 
         // Solo para mostrar (listado y detalle)
-        [Display(Name = "Sucursal")]
+        [Display(Name = "Artista")]
         public string? NombreSucursal { get; set; }
     }
 }
