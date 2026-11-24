@@ -1,0 +1,237 @@
+@model PalermoAgenda.Application.DTOs.CitaDTO
+@{
+    ViewData["Title"] = "Registrar reserva";
+    var servicios = (IEnumerable<PalermoAgenda.Application.DTOs.ServicioDTO>)ViewBag.Servicios;
+    var horarios = (IEnumerable<PalermoAgenda.Application.DTOs.HorarioDTO>)ViewBag.Horarios;
+    var bloqueos = (IEnumerable<PalermoAgenda.Application.DTOs.BloqueoDTO>)ViewBag.Bloqueos;
+}
+
+<style>
+    ul.ui-autocomplete {
+        z-index: 1100;
+    }
+</style>
+<h1>Registrar reserva</h1>
+<hr />
+<div class="row g-4">
+    <div class="col-lg-7">
+        <form asp-action="Create" asp-antiforgery="true">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            @* La sucursal es la del encargado: se muestra pero no se puede cambiar *@
+            <input type="hidden" asp-for="IdArtista" />
+            <div class="mb-3">
+                <label class="form-label">Sucursal</label>
+                <input class="form-control" value="@ViewBag.NombreSucursal" readonly />
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="IdCliente" class="form-label"></label>
+                @* Mismo autocompletado de cliente que en la factura *@
+                <input id="ClienteBuscar" type="text" autocomplete="off" class="form-control"
+                       placeholder="Escriba el nombre del cliente" value="@ViewBag.ClienteNombre" />
+                <input asp-for="IdCliente" type="hidden" />
+                <span asp-validation-for="IdCliente" class="text-danger"></span>
+                <!-- Datos del cliente seleccionado -->
+                <small id="ClienteNombre" class="d-block">@ViewBag.ClienteNombre</small>
+                <small id="ClienteEmail" class="d-block text-muted">@ViewBag.ClienteEmail</small>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="IdServicio" class="form-label"></label>
+                <select asp-for="IdServicio" class="form-select">
+                    <option value="0" data-duracion="0" data-precio="0">-- Seleccione un servicio --</option>
+                    @foreach (var s in servicios)
+                    {
+                        <option value="@s.IdServicio" data-duracion="@s.DuracionMinutos"
+                                data-precio="@s.Precio.ToString(System.Globalization.CultureInfo.InvariantCulture)"
+                                selected="@(s.IdServicio == Model.IdServicio)">
+                            @s.Nombre (@s.DuracionMinutos min)
+                        </option>
+                    }
+                </select>
+                <span asp-validation-for="IdServicio" class="text-danger"></span>
+                <div class="form-text" id="infoServicio"></div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label asp-for="Fecha" class="form-label"></label>
+                    <input asp-for="Fecha" type="date" asp-format="{0:yyyy-MM-dd}" class="form-control" />
+                    <span asp-validation-for="Fecha" class="text-danger"></span>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label asp-for="HoraInicio" class="form-label"></label>
+                    <input asp-for="HoraInicio" type="time" asp-format="{0:HH:mm}" class="form-control" />
+                    <span asp-validation-for="HoraInicio" class="text-danger"></span>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label asp-for="HoraFin" class="form-label"></label>
+                    @* Solo informativa: el servidor la calcula con la duración del servicio *@
+                    <input id="horaFinCalculada" class="form-control" readonly />
+                </div>
+            </div>
+
+            <h5 class="mt-2">Preguntas previas</h5>
+            <div class="mb-3">
+                <label asp-for="ZonaCuerpo" class="form-label">1. ¿En qué zona del cuerpo será el tatuaje?</label>
+                <input asp-for="ZonaCuerpo" class="form-control" placeholder="Ej: antebrazo derecho" />
+                <span asp-validation-for="ZonaCuerpo" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label d-block">2. ¿Tiene alguna alergia?</label>
+                <div class="form-check form-switch">
+                    <input asp-for="TieneAlergias" class="form-check-input" />
+                    <label asp-for="TieneAlergias" class="form-check-label">Sí, tiene alergias</label>
+                </div>
+            </div>
+            <div class="mb-3" id="grupoAlergias">
+                <label asp-for="DetalleAlergias" class="form-label"></label>
+                <input asp-for="DetalleAlergias" class="form-control" placeholder="Ej: látex, níquel" />
+                <span asp-validation-for="DetalleAlergias" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="ReferenciaDiseno" class="form-label">3. ¿Tiene una referencia del diseño?</label>
+                <textarea asp-for="ReferenciaDiseno" class="form-control" rows="3"
+                          placeholder="Describa la idea o pegue el enlace de una imagen de referencia"></textarea>
+                <span asp-validation-for="ReferenciaDiseno" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Estado</label>
+                <div><span class="badge" style="background-color:#F0AD4E">Pendiente</span></div>
+                <div class="form-text">Al registrar la reserva se genera automáticamente su factura proforma.</div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Registrar reserva</button>
+            <a asp-action="Index" class="btn btn-secondary">Regresar</a>
+        </form>
+    </div>
+
+    <div class="col-lg-5">
+        <div class="card card-detalle mb-3">
+            <div class="card-header"><i class="bi bi-clock"></i> Horarios de atención</div>
+            <div class="card-body">
+                @if (!horarios.Any())
+                {
+                    <p class="text-muted mb-0">La sucursal no tiene horarios registrados.</p>
+                }
+                else
+                {
+                    <ul class="list-unstyled mb-0">
+                        @foreach (var h in horarios)
+                        {
+                            <li>@h.Fecha.ToString("dd-MM-yyyy"): @h.HoraInicio.ToString("HH:mm") a @h.HoraFin.ToString("HH:mm")</li>
+                        }
+                    </ul>
+                }
+            </div>
+        </div>
+        <div class="card card-detalle">
+            <div class="card-header"><i class="bi bi-slash-circle"></i> Bloqueos</div>
+            <div class="card-body">
+                @if (!bloqueos.Any())
+                {
+                    <p class="text-muted mb-0">Sin bloqueos próximos.</p>
+                }
+                else
+                {
+                    <ul class="list-unstyled mb-0">
+                        @foreach (var b in bloqueos)
+                        {
+                            <li>
+                                @b.Fecha.ToString("dd-MM-yyyy"):
+                                @(b.TodoElDia ? "todo el día" : $"{b.HoraInicio:HH\\:mm} a {b.HoraFin:HH\\:mm}")
+                                @if (!string.IsNullOrEmpty(b.Motivo))
+                                {
+                                    <span class="text-muted">(@b.Motivo)</span>
+                                }
+                            </li>
+                        }
+                    </ul>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+    <script>
+        // Muestra la hora de fin y el precio según el servicio seleccionado
+        function actualizarServicio() {
+            const opcion = $('#IdServicio option:selected');
+            const duracion = parseInt(opcion.data('duracion')) || 0;
+            const precio = parseFloat(opcion.data('precio')) || 0;
+            const inicio = $('#HoraInicio').val();
+
+            if (duracion > 0) {
+                $('#infoServicio').text('Duración: ' + duracion + ' min · Precio: ₡' +
+                    precio.toLocaleString('es-CR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+            } else {
+                $('#infoServicio').text('');
+            }
+
+            if (duracion > 0 && inicio) {
+                const partes = inicio.split(':');
+                const total = parseInt(partes[0]) * 60 + parseInt(partes[1]) + duracion;
+                const hh = String(Math.floor(total / 60)).padStart(2, '0');
+                const mm = String(total % 60).padStart(2, '0');
+                $('#horaFinCalculada').val(total >= 24 * 60 ? 'Después de medianoche' : hh + ':' + mm);
+            } else {
+                $('#horaFinCalculada').val('');
+            }
+        }
+
+        // El detalle de alergias solo aplica si el cliente indicó que tiene alergias
+        function actualizarAlergias() {
+            const tiene = $('#TieneAlergias').is(':checked');
+            $('#grupoAlergias').toggle(tiene);
+            if (!tiene) $('#DetalleAlergias').val('');
+        }
+
+        /**************************/
+        // Cliente: autocompletar por nombre y mostrar nombre completo y email
+        /**************************/
+        $("#ClienteBuscar").autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    type: "GET",
+                    url: '@Url.Action("GetClienteByName", "Usuario")',
+                    dataType: "json",
+                    data: { filtro: request.term },
+                    success: function (data) {
+                        response($.map(data, function (item) {
+                            return { label: item.nombre + " (" + item.identificacion + ")", value: item.idUsuario, data: item };
+                        }));
+                    },
+                    error: function (xhr, status, error) {
+                        Swal.fire({ title: "Error", text: "Error: " + error + ", No Error: " + xhr.status, icon: "error" });
+                    },
+                });
+            },
+            select: function (event, ui) {
+                $("#IdCliente").val(ui.item.value);
+                $("#ClienteBuscar").val(ui.item.label);
+                $("#ClienteNombre").text(ui.item.data.nombre);
+                $("#ClienteEmail").text(ui.item.data.email);
+                return false;
+            }
+        });
+        $("#ClienteBuscar").focus(function () {
+            $("#ClienteBuscar").val("");
+            $("#IdCliente").val("");
+            $("#ClienteNombre").text("");
+            $("#ClienteEmail").text("");
+        });
+
+        $(function () {
+            $('#IdServicio, #HoraInicio').on('change input', actualizarServicio);
+            $('#TieneAlergias').on('change', actualizarAlergias);
+            actualizarServicio();
+            actualizarAlergias();
+        });
+    </script>
+}

@@ -5,13 +5,25 @@
 }
 
 <h1>Reservas</h1>
+<p>
+    <a asp-action="Create" class="btn btn-primary">Registrar reserva</a>
+</p>
+<!-- Filtros por cliente y/o fecha (sin recargar la página) -->
+<div class="row g-2 mb-3">
+    <div class="col-md-5">
+        <input id="filtroCliente" class="form-control" placeholder="Buscar por cliente" oninput="filtrarCitas()" />
+    </div>
+    <div class="col-md-3">
+        <input id="filtroFecha" type="date" class="form-control" onchange="filtrarCitas()" />
+    </div>
+</div>
 
-
-<table class="table">
+<table class="table" id="tablaCitas">
     <thead>
         <tr>
             <th>@Html.DisplayNameFor(model => model.Fecha)</th>
             <th>@Html.DisplayNameFor(model => model.HoraInicio)</th>
+            <th>@Html.DisplayNameFor(model => model.IdClienteNavigation)</th>
             <th>@Html.DisplayNameFor(model => model.IdServicioNavigation)</th>
             <th>@Html.DisplayNameFor(model => model.IdEstadoCitaNavigation)</th>
             <th></th>
@@ -23,10 +35,11 @@
     <tbody>
         @foreach (var item in Model)
         {
-            <tr>
+            <tr data-cliente="@item.IdClienteNavigation.Nombre.ToLower()" data-fecha="@item.Fecha.ToString("yyyy-MM-dd")">
                 
                 <td>@item.Fecha.ToString("dd-MM-yyyy")</td>
                 <td>@item.HoraInicio.ToString("HH:mm")</td>
+                <td>@item.IdClienteNavigation.Nombre</td>
                 <td>@item.IdServicioNavigation.Nombre</td>
                 <td>
                     <span class="badge" style="background-color:@item.IdEstadoCitaNavigation.Color">
@@ -43,3 +56,18 @@
         }
     </tbody>
 </table>
+
+@section Scripts {
+    <script>
+        function filtrarCitas() {
+            let cliente = $("#filtroCliente").val().trim().toLowerCase();
+            let fecha = $("#filtroFecha").val();
+            $("#tablaCitas tbody tr").each(function () {
+                let fila = $(this);
+                let coincide = (cliente == "" || fila.attr("data-cliente").includes(cliente))
+                            && (fecha == "" || fila.attr("data-fecha") == fecha);
+                fila.toggle(coincide);
+            });
+        }
+    </script>
+}
