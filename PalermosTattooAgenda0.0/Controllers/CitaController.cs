@@ -109,20 +109,18 @@ namespace PalermosTattooAgenda0.Web.Controllers
                 if (error != null) ModelState.AddModelError(string.Empty, error);
             }
 
+            // El formulario se envía por AJAX: los errores vuelven como BadRequest
+            // y la vista los muestra con SweetAlert sin recargar la página
             if (!ModelState.IsValid)
             {
                 string errors = string.Join("; ", ModelState.Values
                                    .SelectMany(x => x.Errors)
                                    .Select(x => x.ErrorMessage));
-                ViewBag.NotificationMessage = SweetAlertHelper.Mensaje("Reserva", errors, SweetAlertMessageType.error);
-                await CargarDatos(dto);
-                return View(dto);
+                return BadRequest(errors);
             }
 
             var idCita = await _serviceCita.AddAsync(dto);
-            TempData["Mensaje"] = SweetAlertHelper.Mensaje("Registrar reserva",
-                $"Reserva #{idCita} registrada. Se generó su factura proforma.", SweetAlertMessageType.success);
-            return RedirectToAction(nameof(Index));
+            return Json(new { mensaje = $"Reserva #{idCita} registrada. Se generó su factura proforma." });
         }
     }
 }

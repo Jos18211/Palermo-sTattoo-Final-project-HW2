@@ -9,7 +9,16 @@
 <p>
     <a asp-action="Create" class="btn btn-primary">Nueva Factura</a>
 </p>
-<table class="table">
+<!-- Filtros por cliente y/o fecha (sin recargar la página) -->
+<div class="row g-2 mb-3">
+    <div class="col-md-5">
+        <input id="filtroCliente" class="form-control" placeholder="Buscar por cliente" oninput="filtrarFacturas()" />
+    </div>
+    <div class="col-md-3">
+        <input id="filtroFecha" type="date" class="form-control" onchange="filtrarFacturas()" />
+    </div>
+</div>
+<table class="table" id="tablaFacturas">
     <thead>
         <tr>
             <th>
@@ -24,13 +33,16 @@
             <th>
                 @Html.DisplayNameFor(model => model.Total)
             </th>
+            <th>
+                Estado
+            </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
         @foreach (var item in Model)
         {
-            <tr>
+            <tr data-cliente="@item.IdClienteNavigation.Nombre.ToLower()" data-fecha="@item.FechaFactura.ToString("yyyy-MM-dd")">
                 <td>
                     @Html.DisplayFor(modelItem => item.IdFactura)
                 </td>
@@ -42,14 +54,44 @@
                 </td>
 
                 <td>
-                    @Html.DisplayFor(modelItem => item.Total)
+                    &#8353;@item.Total.ToString("N2")
+                </td>
+                <td>
+                    <!-- En la BD el estado es Firme; al usuario se le muestra Facturado -->
+                    @if (item.Estado == "Proforma")
+                    {
+                        <span class="badge bg-warning text-dark">Proforma</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-success">Facturado</span>
+                    }
                 </td>
                 <td>
                     <a asp-action="Details"
                        asp-route-id="@item.IdFactura"
                        class="btn btn-info">Detalle</a>
+                    @if (item.Estado == "Proforma")
+                    {
+                        <a asp-action="Facturar" asp-route-id="@item.IdFactura" class="btn btn-success">Facturar</a>
+                    }
                 </td>
             </tr>
         }
     </tbody>
 </table>
+
+@section Scripts {
+    <script>
+        function filtrarFacturas() {
+            let cliente = $("#filtroCliente").val().trim().toLowerCase();
+            let fecha = $("#filtroFecha").val();
+            $("#tablaFacturas tbody tr").each(function () {
+                let fila = $(this);
+                let coincide = (cliente == "" || fila.attr("data-cliente").includes(cliente))
+                            && (fecha == "" || fila.attr("data-fecha") == fecha);
+                fila.toggle(coincide);
+            });
+        }
+    </script>
+}

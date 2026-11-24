@@ -15,7 +15,12 @@
 <hr />
 <div class="row g-4">
     <div class="col-lg-7">
-        <form asp-action="Create" asp-antiforgery="true">
+        @* Se envía por AJAX (mismo patrón que la factura): no se recarga la página *@
+        <form asp-action="Create" asp-antiforgery="true" id="formReserva"
+              data-ajax="true"
+              data-ajax-method="POST"
+              data-ajax-failure="onFailure"
+              data-ajax-success="onSuccess">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
             @* La sucursal es la del encargado: se muestra pero no se puede cambiar *@
@@ -226,6 +231,21 @@
             $("#ClienteNombre").text("");
             $("#ClienteEmail").text("");
         });
+
+        /**************************/
+        // Respuesta del registro (AJAX)
+        /**************************/
+        function onFailure(response) {
+            // Errores de validación o de reglas de negocio: se quedan los datos en el formulario
+            Swal.fire({ title: "Reserva", text: response.responseText, icon: "error" });
+        }
+        function onSuccess(response) {
+            // Se espera a que el usuario vea la notificación antes de volver al historial
+            Swal.fire({ title: "Registrar reserva", text: response.mensaje, icon: "success" })
+                .then(function () {
+                    window.location.href = '@Url.Action("Index", "Cita")';
+                });
+        }
 
         $(function () {
             $('#IdServicio, #HoraInicio').on('change input', actualizarServicio);
